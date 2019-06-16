@@ -11,7 +11,7 @@ namespace TileUtility
 	const int32 TILE_MESH_MATERIAL_INDEX = 0;
 
 	UENUM(BlueprintType)
-		enum class ETileColour : uint8
+	enum class ETileColour : uint8
 	{
 		LIGHT,
 		DARK,
@@ -21,7 +21,7 @@ namespace TileUtility
 	};
 
 	UENUM(BlueprintType)
-		enum class ETileState : uint8
+	enum class ETileState : uint8
 	{
 		IDLE,
 		OCCUPIED,
