@@ -23,9 +23,9 @@ namespace TileUtility
 	UENUM(BlueprintType)
 	enum class ETileState : uint8
 	{
-		IDLE,
-		OCCUPIED,
+		IDLE,		UMETA(DisplayName = "IDLE")
+		OCCUPIED,	UMETA(DisplayName = "OCCUPIED")
 
-		NUM
+		NUM			UMETA(DisplayName = "INVALID")
 	};
 }

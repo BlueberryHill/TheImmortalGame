@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "PieceUtility.generated.h"
 
+
+
 UENUM(BlueprintType)
 enum class EPieceType : uint8
 {

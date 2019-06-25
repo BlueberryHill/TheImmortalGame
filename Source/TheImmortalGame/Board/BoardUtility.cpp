@@ -17,7 +17,7 @@ namespace
 
 namespace BoardUtility
 {
-	FVector OriginToTileCentreOffset(TileCoordinate Coordinates, BoardDimensions Dimensions /*= BoardDimensions()*/)
+	FVector OriginToTileCentreOffset(TileCoordinate Coordinates, TileDimensions Dimensions /*= BoardDimensions()*/)
 	{
 		return FVector(static_cast<float>(Coordinates.Row) * Dimensions.TileHeight, 
 					   static_cast<float>(Coordinates.Col) * Dimensions.TileWidth, 
@@ -35,5 +35,10 @@ namespace BoardUtility
 		{
 			return TileUtility::ETileColour::LIGHT;
 		}
+	}
+
+	int32 CoordinateToIndex(TileCoordinate Coordinate, BoardDimensions Dimensions /*= BoardDimensions()*/)
+	{
+		return Coordinate.Row * Dimensions.NumCols + Coordinate.Col;
 	}
 }

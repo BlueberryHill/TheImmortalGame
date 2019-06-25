@@ -5,6 +5,8 @@
 
 #include "TIGCameraPawn.h"
 
+#include "EngineGlobals.h"
+
 ATIGCameraPawnController::ATIGCameraPawnController()
 {
 	bShowMouseCursor = true;

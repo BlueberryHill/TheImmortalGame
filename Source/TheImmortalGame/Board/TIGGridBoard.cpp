@@ -117,7 +117,9 @@ void ATIGGridBoard::DestroyAllTiles()
 
 void ATIGGridBoard::ValidateCoordinate(BoardUtility::TileCoordinate Coordinate)
 {
-	check(Coordinate.Row < NumRows && "AddTile: Invalid Row Coordinate");
+	check(Coordinate.Row >= 0		  && "AddTile: Invalid Row Coordinate");
+	check(Coordinate.Col >= 0		  && "AddTile: Invalid Column Coordinate");
+	check(Coordinate.Row < NumRows    && "AddTile: Invalid Row Coordinate");
 	check(Coordinate.Col < NumColumns && "AddTile: Invalid Column Coordinate");
 }
 

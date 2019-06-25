@@ -32,10 +32,10 @@ protected:
 	void CreateBoard(const FTransform & Transform);
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 NumColumns = 8;
+	int32 NumColumns = BoardUtility::DEFAULT_NUM_COLS;
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 NumRows = 8;
+	int32 NumRows = BoardUtility::DEFAULT_NUM_ROWS;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tiles")
 	TSubclassOf<ATIGTile> TileClass;
