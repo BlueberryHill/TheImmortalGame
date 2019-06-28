@@ -29,13 +29,16 @@ public:
 
 		virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 		virtual void StartPlay() override;
-private:
-	UTIGArena*	Arena;
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Arena")
+	TSubclassOf<UTIGArena>	ArenaClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
 	TSubclassOf<UTIGPieceManager> PieceManagerClass;
 
 private:
+	UTIGArena* Arena;
+
 	// Initialisation
 	void InitArena();
 	UTIGPieceManager* CreatePieceManager();

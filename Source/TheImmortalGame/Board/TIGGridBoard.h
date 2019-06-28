@@ -23,6 +23,7 @@ public:
 	// Sets default values for this actor's properties
 	ATIGGridBoard();
 
+	int32 GetNumColumns() const { return NumColumns; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

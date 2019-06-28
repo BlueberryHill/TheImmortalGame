@@ -17,11 +17,7 @@
 #include "EngineGlobals.h"
 
 ATIGCoreGameMode::ATIGCoreGameMode() 
-	: Arena(NewObject<UTIGArena>(UTIGArena::StaticClass()))
-	, PieceManagerClass(UTIGPieceManager::StaticClass())
 {
-	check(PieceManagerClass != nullptr && "ATIGCoreGameMode : No PieceManagerClass Set");
-	check(Arena != nullptr && "ATIGCoreGameMode : Failed to create Arena");
 }
 
 void ATIGCoreGameMode::StartPlay()
@@ -43,11 +39,15 @@ void ATIGCoreGameMode::InitArena()
 	UTIGPieceManager* PieceManager = CreatePieceManager();
 	ATIGGridBoard* GameBoard = FetchGameBoard();
 
+	Arena = NewObject<UTIGArena>(this, ArenaClass);
 	Arena->InitArena(*PieceManager, *GameBoard);
+
+	check(Arena != nullptr && "ATIGCoreGameMode : Failed to create Arena");
 }
 
 UTIGPieceManager* ATIGCoreGameMode::CreatePieceManager()
 {
+	check(PieceManagerClass != nullptr && "ATIGCoreGameMode : No PieceManagerClass Set");
 	UTIGPieceManager* PieceManager = NewObject<UTIGPieceManager>(this, *PieceManagerClass);
 	check(PieceManager != nullptr && "TIGCoreGameMode: Failed to create a PieceManager");
 
