@@ -32,4 +32,5 @@ namespace BoardUtility
 	TileUtility::ETileColour CoordinateToTileColour(TileCoordinate Coordinate);
 
 	int32 CoordinateToIndex(TileCoordinate Coordinate, BoardDimensions Dimensions = BoardDimensions());
+	TileCoordinate IndexToCoordinate(int32 Index, BoardDimensions Dimensions = BoardDimensions());
 }

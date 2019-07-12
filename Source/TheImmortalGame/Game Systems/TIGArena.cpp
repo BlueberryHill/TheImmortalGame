@@ -3,16 +3,24 @@
 
 #include "TIGArena.h"
 
+#include "TIGLogicalArena.h" 
+#include "TIGArenaDelegates.h"
+
+#include "Pieces/TIGLogicalPiece.h"
 #include "Pieces/TIGPieceManager.h"
 #include "Pieces/TIGPiece.h"
-#include "Board/TIGGridBoard.h"
 
+#include "Player/TIGPlayerState.h"
+
+#include "Board/TIGGridBoard.h"
 #include "Board/BoardUtility.h"
 
-#include "Database/TIGStartingPieces.h"
+#include "Game/TIGCoreGameMode.h"
+#include "Game/TIGGameModeOptions.h"
 
-#include "Engine/DataTable.h"
 #include "Engine/World.h"
+#include "EngineGlobals.h"
+#include "Engine.h"
 
 UTIGArena::UTIGArena() 
 {
@@ -22,38 +30,45 @@ UTIGArena::~UTIGArena()
 {
 }
 
-void UTIGArena::InitArena(UTIGPieceManager& NewPieceManager, ATIGGridBoard& NewGameBoard)
+void UTIGArena::InitArena(TIGLogicalArena& Arena) 
 {
-	PieceManager = &NewPieceManager;
-	GameBoard = &NewGameBoard;
-}
 
-#include "Player/TIGPlayerState.h"
-void UTIGArena::PrepareToStart()
-{
-	check(GameBoard != nullptr && "TIGArena - No GameBoard");
-	check(PieceManager != nullptr && "TIGArena - No PieceManager");
+	LogicalArena = &Arena;
 
-	ATIGPlayerState* FakeState = NewObject<ATIGPlayerState>(ATIGPlayerState::StaticClass());
-	if (StartingPieces)
+	ATIGCoreGameMode* GameMode = Cast<ATIGCoreGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
-		for (auto& KeyRowPair : StartingPieces->GetRowMap())
-		{
-			FTIGStartingPieces* PieceRow = (FTIGStartingPieces*)(KeyRowPair.Value); //#TODO: Safer to get all names then extract rows from names
-			if (PieceRow->Col >= 0)
-			{
-				AddPiece(PieceRow->Row, PieceRow->Col, PieceRow->PieceType, *FakeState);
-			}
-			else
-			{
-				AddRowOfPieces(PieceRow->Row, PieceRow->PieceType, *FakeState);
-			}
-		}
-	}
+		PieceManager = NewObject<UTIGPieceManager>(this, *GameMode->GetOptions().GetPieceManagerClass());
+		check(PieceManager != nullptr && "TIGArena - No PieceManager");
 
+		SetupDelegates(Arena);
+	}
 }
 
-void UTIGArena::AddRowOfPieces(const int32 Row, const EPieceType PieceType, ATIGPlayerState& OwningPlayer)
+void UTIGArena::SetupDelegates(TIGLogicalArena& Arena)
+{
+	FTIGArenaDelegates& Delegates = Arena.Delegates;
+	Delegates.BoardCreated.AddUObject(this, &UTIGArena::BoardCreated);
+	Delegates.PieceSpawned.AddUObject(this, &UTIGArena::PieceCreated);
+	Delegates.TileSpawned.AddUObject(this, &UTIGArena::TileCreated);
+}
+
+
+void UTIGArena::BoardCreated(int32 NumRows, int32 NumCols)
+{
+	ATIGCoreGameMode* GameMode = Cast<ATIGCoreGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		FVector Location(0.0f);
+		FRotator Rotation(0.0f);
+		FActorSpawnParameters SpawnInfo;
+
+		GameBoard = GetWorld()->SpawnActor<ATIGGridBoard>(*GameMode->GetOptions().GetBoardClass(), Location, Rotation, SpawnInfo);
+		check(GameBoard != nullptr && "TIGArena - No GameBoard");
+	}
+}
+
+void UTIGArena::AddRowOfPieces(int32 Row, EPieceType PieceType, const ATIGPlayerState& OwningPlayer)
 {
 	check(GameBoard != nullptr && "TIGArena - No GameBoard");
 
@@ -63,18 +78,30 @@ void UTIGArena::AddRowOfPieces(const int32 Row, const EPieceType PieceType, ATIG
 	}
 }
 
-void UTIGArena::AddPiece(const int32 Row, const int32 Col, const EPieceType PieceType, ATIGPlayerState& OwningPlayer)
+void UTIGArena::PieceCreated(int32 Row, int32 Col, int32 PieceID)
+{
+	const TIGLogicalPiece& CreatedPiece = LogicalArena->GetPieceForID(PieceID);
+	EPieceType Type = CreatedPiece.GetType();
+
+	//#TODO: Remove after creating multiple players
+	ATIGPlayerState* FakeState = NewObject<ATIGPlayerState>(ATIGPlayerState::StaticClass());
+	AddPiece(Row, Col, Type, *FakeState);
+}
+
+void UTIGArena::TileCreated(int32 Row, int32 Col, int32 TileID)
+{
+	GameBoard->AddTile({Row, Col});
+}
+
+void UTIGArena::AddPiece(int32 Row, int32 Col, EPieceType PieceType, const ATIGPlayerState& OwningPlayer)
 {
 	check(GameBoard != nullptr && "TIGArena - No GameBoard");
 	check(PieceManager != nullptr && "TIGArena - No PieceManager");
 
-	//GameBoard->GetTilePieceLocation(); //GetTileCentre() + Offset
 	FTransform Translation(BoardUtility::OriginToTileCentreOffset({ Row, Col }));
 	FTransform SpawnTransform = GameBoard->GetTransform() + Translation;
-	ATIGPiece* Piece = PieceManager->CreatePiece(OwningPlayer, PieceType, SpawnTransform); // GetWorld()->SpawnActor<ATIGPiece>(SpawnTransform.GetTranslation(), SpawnTransform.GetRotation().Rotator());
+	ATIGPiece* Piece = PieceManager->CreatePiece(OwningPlayer, PieceType, SpawnTransform);
 	Piece->AttachToActor(GameBoard, FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
-	//Piece->SetMaterial(CoordinatesToMaterial(Row, Col)); // PlayerState PlayerColour
-	//Tile->SetState(Occupied);
 }
 
 

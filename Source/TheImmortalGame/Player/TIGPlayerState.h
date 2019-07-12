@@ -17,7 +17,7 @@ class THEIMMORTALGAME_API ATIGPlayerState : public APlayerState
 public:
 	ATIGPlayerState();
 
-	int32 GetUniqueID() { return UniqueID; }
+	int32 GetUniqueID() const { return UniqueID; }
 
 private:
 	int32 UniqueID = 0;

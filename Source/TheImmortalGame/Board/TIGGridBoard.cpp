@@ -27,27 +27,27 @@ void ATIGGridBoard::OnConstruction(const FTransform & Transform)
 {
 	Super::OnConstruction(Transform);
 
-	check(NumColumns > 0 && "NumColumns must be positive");
-	check(NumRows > 0 && "NumRows must be positive");
-	
-	if (HasAnyFlags(EObjectFlags::RF_Transient)) // Transient check fixes a weird issue with some tiles not getting destroyed in editor.
-	{
-		return;
-	}
+	//check(NumColumns > 0 && "NumColumns must be positive");
+	//check(NumRows > 0 && "NumRows must be positive");
+	//
+	//if (HasAnyFlags(EObjectFlags::RF_Transient)) // Transient check fixes a weird issue with some tiles not getting destroyed in editor.
+	//{
+	//	return;
+	//}
 
-	DestroyAllTiles();
-	CreateBoard(Transform);
+	//DestroyAllTiles();
+	//CreateBoard(Transform);
 }
 
 void ATIGGridBoard::CreateBoard(const FTransform & Transform)
 {
-	for (int32 Row = 0; Row < NumRows; ++Row)
-	{
-		for (int32 Col = 0; Col < NumColumns; ++Col)
-		{
-			AddTile({ Row, Col }, Transform);
-		}
-	}
+	//for (int32 Row = 0; Row < NumRows; ++Row)
+	//{
+	//	for (int32 Col = 0; Col < NumColumns; ++Col)
+	//	{
+	//		AddTile({ Row, Col }, Transform);
+	//	}
+	//}
 }
 
 // Called every frame
@@ -60,19 +60,16 @@ void ATIGGridBoard::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	DestroyAllTiles();
+	//DestroyAllTiles();
 }
 
-void ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate, const FTransform & Transform)
+ATIGTile* ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate)
 {
-	if (GetWorld() == nullptr || TileClass == nullptr)
-	{
-		return;
-	}
-
+	check(GetWorld() != nullptr && "AddTile() - No valid game world");
+	check(TileClass != nullptr && "AddTile() - No Tile Class assigned");
 	ValidateCoordinate(Coordinate);
 
-	ATIGTile* Tile = SpawnTile(Coordinate, Transform);
+	ATIGTile* Tile = SpawnTile(Coordinate, GetTransform());
 	AddTileToBoard(Tile);
 	
 	TileUtility::ETileColour Colour = BoardUtility::CoordinateToTileColour(Coordinate);
@@ -86,6 +83,8 @@ void ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate, const FTran
 	{
 		Tile->SetMaterial(LightMaterialsPerState[static_cast<uint8>(TileUtility::ETileState::IDLE)]);
 	}
+
+	return Tile;
 }
 
 ATIGTile* ATIGGridBoard::SpawnTile(const BoardUtility::TileCoordinate& Coordinate, const FTransform& Transform)

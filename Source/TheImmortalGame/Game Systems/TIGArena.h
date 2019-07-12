@@ -9,7 +9,11 @@ class UTIGPieceManager;
 class ATIGGridBoard;
 class ATIGPlayerState;
 
+class TIGLogicalArena;
+
 class UDataTable;
+
+struct  FArenaDelegates;
 
 enum class EPieceType : uint8;
 /**
@@ -23,19 +27,24 @@ public:
 	UTIGArena();
 	~UTIGArena();
 
-	void InitArena(UTIGPieceManager& PieceManager, ATIGGridBoard& GameBoard);
-
-	void PrepareToStart();
-
-
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Pieces")
-	UDataTable* StartingPieces;
+	void InitArena(TIGLogicalArena& Arena);
 private:
+	UFUNCTION()
+	void BoardCreated(int32 NumRows, int32 NumCols); 
+
+	UFUNCTION()
+	void PieceCreated(int32 Row, int32 Col, int32 PieceID);
+
+	UFUNCTION()
+	void TileCreated(int32 Row, int32 Col, int32 TileID);
+
 	UTIGPieceManager* PieceManager = nullptr; 
 	ATIGGridBoard* GameBoard = nullptr;
 
-	void AddRowOfPieces(const int32 Row, const EPieceType PieceType, ATIGPlayerState& OwningPlayer);
-	void AddPiece(const int32 Row, const int32 Col, const EPieceType PieceType, ATIGPlayerState& OwningPlayer);
+	const TIGLogicalArena* LogicalArena = nullptr;
 
+	void AddRowOfPieces(int32 Row, EPieceType PieceType, const ATIGPlayerState& OwningPlayer);
+	void AddPiece(int32 Row, int32 Col, EPieceType PieceType, const ATIGPlayerState& OwningPlayer);
+
+	void SetupDelegates(TIGLogicalArena& Arena);
 };

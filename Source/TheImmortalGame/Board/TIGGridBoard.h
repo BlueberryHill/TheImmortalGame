@@ -13,7 +13,6 @@
 class ATIGTile;
 class UMaterial;
 
-
 UCLASS()
 class THEIMMORTALGAME_API ATIGGridBoard : public AActor
 {
@@ -54,8 +53,9 @@ public:
 
 	virtual void BeginDestroy() override;
 
+	ATIGTile* AddTile(BoardUtility::TileCoordinate Coordinate);
 private:
-	void AddTile(BoardUtility::TileCoordinate Coordinate, const FTransform& Transform);
+
 	void DestroyAllTiles();
 
 	void ValidateCoordinate(BoardUtility::TileCoordinate Coordinate);

@@ -3,18 +3,10 @@
 
 #include "TIGPlayerState.h"
 
-#include "ThreadSafeCounter.h"
-
-namespace {
-	int CreateNextUniqueID() {
-		static FThreadSafeCounter ID{ 0 }; 
-		return ID.Increment();
-	}
-
-}
+#include "General/Entity.h"
 
 ATIGPlayerState::ATIGPlayerState() :
 	APlayerState(),
-	UniqueID(CreateNextUniqueID())
+	UniqueID(EntityUtility::CreateNextUniqueID<ATIGPlayerState>())
 {
 }

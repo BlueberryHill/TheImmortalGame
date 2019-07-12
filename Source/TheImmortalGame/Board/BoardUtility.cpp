@@ -41,4 +41,8 @@ namespace BoardUtility
 	{
 		return Coordinate.Row * Dimensions.NumCols + Coordinate.Col;
 	}
+	TileCoordinate IndexToCoordinate(int32 Index, BoardDimensions Dimensions /*= BoardDimensions()*/)
+	{
+		return { Index / Dimensions.NumCols, Index % Dimensions.NumCols };
+	}
 }

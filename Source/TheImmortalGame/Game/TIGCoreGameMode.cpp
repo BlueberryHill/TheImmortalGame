@@ -3,6 +3,8 @@
 
 #include "TIGCoreGameMode.h"
 
+#include "CoreGameUtilities.h"
+
 #include "Player/TIGCameraPawnController.h"
 #include "Player/TIGPlayerState.h"
 
@@ -20,48 +22,27 @@ ATIGCoreGameMode::ATIGCoreGameMode()
 {
 }
 
-void ATIGCoreGameMode::StartPlay()
-{
-	Super::StartPlay();
-	Arena->PrepareToStart();
-}
-
-
 void  ATIGCoreGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	InitOptions();
 	InitArena();
 }
 
 void ATIGCoreGameMode::InitArena()
 {
-	UTIGPieceManager* PieceManager = CreatePieceManager();
-	ATIGGridBoard* GameBoard = FetchGameBoard();
-
 	Arena = NewObject<UTIGArena>(this, ArenaClass);
-	Arena->InitArena(*PieceManager, *GameBoard);
-
+	Arena->InitArena(LogicalArena);
 	check(Arena != nullptr && "ATIGCoreGameMode : Failed to create Arena");
+
+	check(StartingPieceLayout != nullptr && "A Starting Piece Table is required"); 
+	LogicalArena.Init({ CoreGameUtilities::DEFAULT_BOARD_NUM_ROWS, CoreGameUtilities::DEFAULT_BOARD_NUM_COLS }, *StartingPieceLayout);
 }
 
-UTIGPieceManager* ATIGCoreGameMode::CreatePieceManager()
+void ATIGCoreGameMode::InitOptions()
 {
-	check(PieceManagerClass != nullptr && "ATIGCoreGameMode : No PieceManagerClass Set");
-	UTIGPieceManager* PieceManager = NewObject<UTIGPieceManager>(this, *PieceManagerClass);
-	check(PieceManager != nullptr && "TIGCoreGameMode: Failed to create a PieceManager");
-
-	return PieceManager;
+	check(GameOptionsClass != nullptr && "ATIGCoreGameMode : No GameOptionClass Set");
+	GameOptions = NewObject<UTIGGameModeOptions>(this, *GameOptionsClass);
 }
 
-ATIGGridBoard* ATIGCoreGameMode::FetchGameBoard()
-{
-	TArray<AActor*> FoundBoard;
-	UGameplayStatics::GetAllActorsOfClass(this, ATIGGridBoard::StaticClass(), FoundBoard);
-	check(FoundBoard.Num() == 1 && "TIGCoreGameMode: Only exactly one board per level is currently supported");
-
-	ATIGGridBoard* GameBoard = Cast<ATIGGridBoard>(FoundBoard[0]);
-	check(GameBoard != nullptr && "TIGCoreGameMode: Failed to fetch game board from level");
-
-	return GameBoard;
-}

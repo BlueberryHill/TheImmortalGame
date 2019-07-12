@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "General/LogicalTypes.h"
 
 #include "PieceUtility.h"
 #include "TIGPieceManager.generated.h"
@@ -20,7 +21,7 @@ class THEIMMORTALGAME_API UTIGPieceManager : public UObject
 	GENERATED_BODY()
 public:
 	using Army	   = TArray<ATIGPiece*>;
-	using PlayerID = int32;
+	using PlayerID = TIG::PlayerID;
 
 	using PlayerIDToArmy = TMap<PlayerID, Army>;
 
@@ -28,11 +29,10 @@ public:
 	UTIGPieceManager();
 	~UTIGPieceManager();
 
-	ATIGPiece* CreatePiece(ATIGPlayerState& Player, EPieceType Type, FTransform& Transform); 
+	ATIGPiece* CreatePiece(const ATIGPlayerState& Player, EPieceType Type, const FTransform& Transform); 
 
 private:
 	PlayerIDToArmy ActivePieces; 
-	PlayerIDToArmy LostPieces;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Piece Types")
 	TSubclassOf<ATIGPiece> PieceClass[static_cast<uint8>(EPieceType::NUM)];

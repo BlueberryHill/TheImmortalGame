@@ -18,7 +18,7 @@ UTIGPieceManager::~UTIGPieceManager()
 {
 }
 
-ATIGPiece* UTIGPieceManager::CreatePiece(ATIGPlayerState& Player, EPieceType Type, FTransform& Transform)
+ATIGPiece* UTIGPieceManager::CreatePiece(const ATIGPlayerState& Player, EPieceType Type, const FTransform& Transform)
 {
 	TSubclassOf<ATIGPiece> PieceClassToSpawn = PieceClass[static_cast<uint8>(Type)];
 	check(PieceClassToSpawn != nullptr && "TIGPieceManager - Critical Error: Missing Piece Class");
