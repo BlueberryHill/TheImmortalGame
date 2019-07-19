@@ -39,6 +39,10 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void RotateClockwise(float Value);
+	void ZoomIn(float Value);
+
+	//// Action Bindings
+	void SelectAttempt();
 
 	//// Action Bindings
 	void SetupActionBindings();
@@ -47,6 +51,8 @@ private:
 	// Movement
 	float CalculateMovementSpeed();
 	float CalculateRotationSpeed();
+	float CalculateZoomSpeed();
+
 
 
 };

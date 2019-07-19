@@ -5,6 +5,13 @@
 
 #include "CameraUtility.h"
 
+#include "Pieces/TIGPieceManager.h"
+#include "Pieces/TIGPiece.h"
+
+#include "Game/TIGCoreGameState.h"
+
+#include "Game Systems/TIGArena.h"
+
 #include "Camera/CameraComponent.h"
 
 #include "Components/SphereComponent.h"
@@ -97,4 +104,29 @@ void ATIGCameraPawn::AddYaw(float Value)
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Add(0.0f, Value, 0.0f);
 	SetActorRotation(NewRotation);
+}
+
+void ATIGCameraPawn::Zoom(float Value)
+{
+	CameraSpringArmComponent->TargetArmLength += Value;
+}
+
+void ATIGCameraPawn::OnPieceSelected(ATIGPiece& Piece)
+{
+	if (CurrentlySelectedPiece == &Piece)
+	{
+		return;
+	}
+
+	ATIGCoreGameState* GameState = Cast<ATIGCoreGameState>(GetWorld()->GetGameState());
+	if (GameState)
+	{
+		UTIGArena& ArenaView = GameState->GetArenaView(); 
+		if (CurrentlySelectedPiece != nullptr)
+		{
+			ArenaView.OnPieceDeselected(*CurrentlySelectedPiece);
+		}
+			CurrentlySelectedPiece = &Piece;
+			ArenaView.OnPieceSelected(Piece);
+	}
 }

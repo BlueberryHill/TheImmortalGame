@@ -2,18 +2,21 @@
 
 #pragma once
 
+#include "General/LogicalTypes.h"
+
 #include "CoreMinimal.h"
 #include "TIGArena.generated.h"
 
 class UTIGPieceManager;
 class ATIGGridBoard;
 class ATIGPlayerState;
+class ATIGPiece;
 
 class TIGLogicalArena;
 
 class UDataTable;
 
-struct  FArenaDelegates;
+struct  FTIGArenaDelegates;
 
 enum class EPieceType : uint8;
 /**
@@ -27,7 +30,11 @@ public:
 	UTIGArena();
 	~UTIGArena();
 
-	void InitArena(TIGLogicalArena& Arena);
+	void InitArena(const TIGLogicalArena& Arena, FTIGArenaDelegates& Delegates);
+
+	TIG::PieceID GetPieceID(const ATIGPiece& Piece) const;
+	void		 OnPieceSelected(ATIGPiece& Piece);
+	void		 OnPieceDeselected(ATIGPiece& Piece);
 private:
 	UFUNCTION()
 	void BoardCreated(int32 NumRows, int32 NumCols); 
@@ -43,8 +50,7 @@ private:
 
 	const TIGLogicalArena* LogicalArena = nullptr;
 
-	void AddRowOfPieces(int32 Row, EPieceType PieceType, const ATIGPlayerState& OwningPlayer);
-	void AddPiece(int32 Row, int32 Col, EPieceType PieceType, const ATIGPlayerState& OwningPlayer);
+	void AddPiece(int32 Row, int32 Col, EPieceType PieceType, TIG::PieceID, const ATIGPlayerState& OwningPlayer);
 
-	void SetupDelegates(TIGLogicalArena& Arena);
+	void SetupDelegates(FTIGArenaDelegates& Delegates);
 };

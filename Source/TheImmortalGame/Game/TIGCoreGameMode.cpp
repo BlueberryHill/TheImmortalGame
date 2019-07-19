@@ -4,6 +4,9 @@
 #include "TIGCoreGameMode.h"
 
 #include "CoreGameUtilities.h"
+#include "TIGCoreGameState.h"
+
+#include "Game Systems/TIGLogicalArena.h"
 
 #include "Player/TIGCameraPawnController.h"
 #include "Player/TIGPlayerState.h"
@@ -20,6 +23,7 @@
 
 ATIGCoreGameMode::ATIGCoreGameMode() 
 {
+	GameStateClass = ATIGCoreGameState::StaticClass();
 }
 
 void  ATIGCoreGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -27,17 +31,27 @@ void  ATIGCoreGameMode::InitGame(const FString& MapName, const FString& Options,
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	InitOptions();
+}
+
+void ATIGCoreGameMode::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
 	InitArena();
 }
 
 void ATIGCoreGameMode::InitArena()
 {
-	Arena = NewObject<UTIGArena>(this, ArenaClass);
-	Arena->InitArena(LogicalArena);
-	check(Arena != nullptr && "ATIGCoreGameMode : Failed to create Arena");
+	UTIGArena* ArenaView = NewObject<UTIGArena>(this, ArenaClass);
+	check(ArenaView != nullptr && "ATIGCoreGameMode : Failed to create Arena");
+
+	TIGLogicalArena* LogicalArena = new TIGLogicalArena;
+	ArenaView->InitArena(*LogicalArena, LogicalArena->Delegates);
 
 	check(StartingPieceLayout != nullptr && "A Starting Piece Table is required"); 
-	LogicalArena.Init({ CoreGameUtilities::DEFAULT_BOARD_NUM_ROWS, CoreGameUtilities::DEFAULT_BOARD_NUM_COLS }, *StartingPieceLayout);
+	LogicalArena->Init({ CoreGameUtilities::DEFAULT_BOARD_NUM_ROWS, CoreGameUtilities::DEFAULT_BOARD_NUM_COLS }, *StartingPieceLayout);
+
+	ATIGCoreGameState* TIGGameState = Cast<ATIGCoreGameState>(GameState);
+	TIGGameState->Init(*ArenaView, *LogicalArena);
 }
 
 void ATIGCoreGameMode::InitOptions()

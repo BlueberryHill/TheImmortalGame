@@ -5,7 +5,13 @@
 
 #include "TIGCameraPawn.h"
 
+#include "General/Collision.h"
+
+#include "Pieces/TIGPiece.h"
+
 #include "EngineGlobals.h"
+
+
 
 ATIGCameraPawnController::ATIGCameraPawnController()
 {
@@ -32,11 +38,12 @@ void ATIGCameraPawnController::SetupAxisBindings()
 	InputComponent->BindAxis("MoveForward", this, &ATIGCameraPawnController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ATIGCameraPawnController::MoveRight);
 	InputComponent->BindAxis("RotateClockwise", this, &ATIGCameraPawnController::RotateClockwise);
+	InputComponent->BindAxis("ZoomIn", this, &ATIGCameraPawnController::ZoomIn);
 }
 
 void ATIGCameraPawnController::SetupActionBindings()
 {
-
+	InputComponent->BindAction("Select", IE_Pressed, this, &ATIGCameraPawnController::SelectAttempt);
 }
 
 void ATIGCameraPawnController::MoveForward(float Value)
@@ -63,6 +70,25 @@ void ATIGCameraPawnController::RotateClockwise(float Value)
 	}
 }
 
+void ATIGCameraPawnController::ZoomIn(float Value)
+{
+	if (bMovementEnabled == true && PossessedPawn)
+	{
+		PossessedPawn->Zoom(Value * CalculateZoomSpeed());
+	}
+}
+
+void ATIGCameraPawnController::SelectAttempt()
+{
+	FHitResult HitResult;
+	GetHitResultUnderCursor(PIECE_TRACE_CHANNEL, false, HitResult);
+	ATIGPiece* SelectedPiece = Cast<ATIGPiece>(HitResult.GetActor());
+	if (SelectedPiece)
+	{
+		PossessedPawn->OnPieceSelected(*SelectedPiece);
+	}
+}
+
 float ATIGCameraPawnController::CalculateMovementSpeed()
 {
 	//#TODO: Make tick independent. Implement this after zoom (Make a function of spring arm length). Clamp between min and max speed
@@ -73,4 +99,10 @@ float ATIGCameraPawnController::CalculateRotationSpeed()
 {
 	//#TODO: Make tick independent. Implement this after (Make a function of spring arm length?). Clamp between min and max speed
 	return 5.0f;
+}
+
+float ATIGCameraPawnController::CalculateZoomSpeed()
+{
+	//#TODO: Make tick independent. Implement this after (Make a function of spring arm length?). Clamp between min and max speed
+	return 100.0f;
 }

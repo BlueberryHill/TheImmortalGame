@@ -28,7 +28,7 @@ public:
 	TIGLogicalPieceManager(const TIGLogicalPieceManager&) = delete;
 	TIGLogicalPieceManager& operator=(const TIGLogicalPieceManager&) = delete;
 
-	const TIGLogicalPiece & GetPieceForID(int32 PieceID) const;
+	const TIGLogicalPiece & GetPieceForID(PieceID PieceID) const;
 	PieceID CreatePiece(PlayerID OwningPlayer, EPieceType Type);
 	void AddToPlayerIDMap(TIG::PlayerID &OwningPlayer, TUniquePtr<TIGLogicalPiece> &NewPiece);
 private:

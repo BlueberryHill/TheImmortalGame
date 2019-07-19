@@ -3,6 +3,8 @@
 
 #include "TIGTile.h"
 
+#include "General/Collision.h"
+
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 
@@ -36,6 +38,7 @@ void ATIGTile::Tick(float DeltaTime)
 void ATIGTile::SetupComponents()
 {
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
+	TileMesh->SetCollisionResponseToChannel(TILE_TRACE_CHANNEL, ECollisionResponse::ECR_Block);
 	RootComponent = TileMesh;
 }
 

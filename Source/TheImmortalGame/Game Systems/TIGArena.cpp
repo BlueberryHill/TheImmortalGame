@@ -30,7 +30,7 @@ UTIGArena::~UTIGArena()
 {
 }
 
-void UTIGArena::InitArena(TIGLogicalArena& Arena) 
+void UTIGArena::InitArena(const TIGLogicalArena& Arena, FTIGArenaDelegates& Delegates)
 {
 
 	LogicalArena = &Arena;
@@ -41,13 +41,27 @@ void UTIGArena::InitArena(TIGLogicalArena& Arena)
 		PieceManager = NewObject<UTIGPieceManager>(this, *GameMode->GetOptions().GetPieceManagerClass());
 		check(PieceManager != nullptr && "TIGArena - No PieceManager");
 
-		SetupDelegates(Arena);
+		SetupDelegates(Delegates);
 	}
 }
 
-void UTIGArena::SetupDelegates(TIGLogicalArena& Arena)
+TIG::PieceID UTIGArena::GetPieceID(const ATIGPiece & Piece) const
 {
-	FTIGArenaDelegates& Delegates = Arena.Delegates;
+	return PieceManager->GetPieceID(Piece);
+}
+
+void UTIGArena::OnPieceSelected(ATIGPiece& Piece)
+{
+	PieceManager->OnPieceSelected(Piece);
+}
+
+void UTIGArena::OnPieceDeselected(ATIGPiece & Piece)
+{
+	PieceManager->OnPieceDeselected(Piece);
+}
+
+void UTIGArena::SetupDelegates(FTIGArenaDelegates& Delegates)
+{
 	Delegates.BoardCreated.AddUObject(this, &UTIGArena::BoardCreated);
 	Delegates.PieceSpawned.AddUObject(this, &UTIGArena::PieceCreated);
 	Delegates.TileSpawned.AddUObject(this, &UTIGArena::TileCreated);
@@ -68,16 +82,6 @@ void UTIGArena::BoardCreated(int32 NumRows, int32 NumCols)
 	}
 }
 
-void UTIGArena::AddRowOfPieces(int32 Row, EPieceType PieceType, const ATIGPlayerState& OwningPlayer)
-{
-	check(GameBoard != nullptr && "TIGArena - No GameBoard");
-
-	for (int32 Col = 0; Col < GameBoard->GetNumColumns(); ++Col)
-	{
-		AddPiece(Row, Col, PieceType, OwningPlayer);
-	}
-}
-
 void UTIGArena::PieceCreated(int32 Row, int32 Col, int32 PieceID)
 {
 	const TIGLogicalPiece& CreatedPiece = LogicalArena->GetPieceForID(PieceID);
@@ -85,7 +89,7 @@ void UTIGArena::PieceCreated(int32 Row, int32 Col, int32 PieceID)
 
 	//#TODO: Remove after creating multiple players
 	ATIGPlayerState* FakeState = NewObject<ATIGPlayerState>(ATIGPlayerState::StaticClass());
-	AddPiece(Row, Col, Type, *FakeState);
+	AddPiece(Row, Col, Type, PieceID, *FakeState);
 }
 
 void UTIGArena::TileCreated(int32 Row, int32 Col, int32 TileID)
@@ -93,14 +97,14 @@ void UTIGArena::TileCreated(int32 Row, int32 Col, int32 TileID)
 	GameBoard->AddTile({Row, Col});
 }
 
-void UTIGArena::AddPiece(int32 Row, int32 Col, EPieceType PieceType, const ATIGPlayerState& OwningPlayer)
+void UTIGArena::AddPiece(int32 Row, int32 Col, EPieceType PieceType, TIG::PieceID ID, const ATIGPlayerState& OwningPlayer)
 {
 	check(GameBoard != nullptr && "TIGArena - No GameBoard");
 	check(PieceManager != nullptr && "TIGArena - No PieceManager");
 
 	FTransform Translation(BoardUtility::OriginToTileCentreOffset({ Row, Col }));
 	FTransform SpawnTransform = GameBoard->GetTransform() + Translation;
-	ATIGPiece* Piece = PieceManager->CreatePiece(OwningPlayer, PieceType, SpawnTransform);
+	ATIGPiece* Piece = PieceManager->CreatePiece(OwningPlayer, PieceType, ID, SpawnTransform);
 	Piece->AttachToActor(GameBoard, FAttachmentTransformRules(EAttachmentRule::KeepWorld, false));
 }
 

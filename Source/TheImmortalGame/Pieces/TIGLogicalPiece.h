@@ -6,11 +6,14 @@
 #include "General/LogicalTypes.h"
 
 enum class EPieceType : uint8;
+
+class TIGMovementBase;
 /**
  * 
  */
 class THEIMMORTALGAME_API TIGLogicalPiece
 {
+	using MovementPtr = TUniquePtr<TIGMovementBase>;
 public:
 	TIGLogicalPiece(EPieceType Type);
 	~TIGLogicalPiece();
@@ -18,6 +21,7 @@ public:
 	TIG::PieceID  GetUniqueID() const { return UniqueID; }
 	EPieceType	  GetType()     const { return BaseType; }
 private:
-	TIG::PieceID	UniqueID;
-	EPieceType		BaseType;
+	TIG::PieceID	 UniqueID;
+	EPieceType		 BaseType;
+	TIGMovementBase* Movement;
 };

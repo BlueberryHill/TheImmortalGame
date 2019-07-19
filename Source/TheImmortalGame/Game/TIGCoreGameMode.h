@@ -6,7 +6,6 @@
 #include "GameFramework/GameMode.h"
 
 #include "Game Systems/TIGArena.h"
-#include "Game Systems/TIGLogicalArena.h"
 
 #include "Game/TIGGameModeOptions.h"
 
@@ -17,9 +16,6 @@
 /**
  * 
  */
-class APlayerController;
-class ATIGGridBoard;
-class UTIGPieceManager;
 class UTIGGameModeOptions;
 
 
@@ -32,6 +28,7 @@ public:
 		ATIGCoreGameMode();
 
 		virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+		virtual void PreInitializeComponents() override;
 
 		const UTIGGameModeOptions& GetOptions() { return *GameOptions; }
 
@@ -46,11 +43,7 @@ protected:
 	UDataTable* StartingPieceLayout;
 
 private:
-	UTIGArena* Arena = nullptr;
-	TIGLogicalArena LogicalArena;
-
 	UTIGGameModeOptions* GameOptions = nullptr;
-	
 
 	// Initialisation
 	void InitArena();

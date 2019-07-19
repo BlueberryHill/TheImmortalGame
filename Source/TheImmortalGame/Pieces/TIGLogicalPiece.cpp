@@ -5,6 +5,9 @@
 
 #include "General/Entity.h"
 
+#include "Game Systems/Movement/TIGMovementBase.h"
+#include "Game Systems/Movement/TIGMovementManager.h"
+
 
 TIGLogicalPiece::TIGLogicalPiece(EPieceType Type) :
 	UniqueID(EntityUtility::CreateNextUniqueID<TIGLogicalPiece>()),

@@ -3,6 +3,13 @@
 
 #include "TIGPiece.h"
 
+#include "General/Collision.h"
+
+#include "Materials/MaterialInstanceDynamic.h"
+
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+
 // Sets default values
 ATIGPiece::ATIGPiece()
 {
@@ -10,6 +17,17 @@ ATIGPiece::ATIGPiece()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetupComponents();
+}
+
+void ATIGPiece::SetBaseColour(const FVector& BaseColour)
+{
+	DynamicBaseMaterial->SetVectorParameterValue("BaseColour", BaseColour);
+}
+
+void ATIGPiece::SetBaseMaterial(UMaterialInstanceDynamic* BaseMat)
+{
+	DynamicBaseMaterial = BaseMat;
+	PieceMesh->SetMaterial(0, DynamicBaseMaterial); //#TODO: Identify material indices
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +47,7 @@ void ATIGPiece::Tick(float DeltaTime)
 void ATIGPiece::SetupComponents()
 {
 	PieceMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
+	PieceMesh->SetCollisionResponseToChannel(PIECE_TRACE_CHANNEL, ECollisionResponse::ECR_Block);
 	RootComponent = PieceMesh;
 }
 

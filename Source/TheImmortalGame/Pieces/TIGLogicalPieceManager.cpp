@@ -20,7 +20,7 @@ TIGLogicalPieceManager::PieceID TIGLogicalPieceManager::CreatePiece(PlayerID Own
 
 	AddToPlayerIDMap(OwningPlayer, NewPiece);
 
-	TIG::PieceID NewPieceID = NewPiece->GetUniqueID();
+	PieceID NewPieceID = NewPiece->GetUniqueID();
 	PieceIDMap.Emplace(NewPieceID, std::move(NewPiece));
 
 	return NewPieceID;
@@ -35,7 +35,7 @@ void TIGLogicalPieceManager::AddToPlayerIDMap(TIG::PlayerID& OwningPlayer, TUniq
 	PlayerIDMap[OwningPlayer].Emplace(NewPiece.Get());
 }
 
-const TIGLogicalPiece & TIGLogicalPieceManager::GetPieceForID(int32 PieceID) const
+const TIGLogicalPiece & TIGLogicalPieceManager::GetPieceForID(PieceID PieceID) const
 {
 	check(PieceIDMap.Contains(PieceID) && "GetPieceForID - Requesting an ID not in the map");
 	return *(PieceIDMap.Find(PieceID)->Get());

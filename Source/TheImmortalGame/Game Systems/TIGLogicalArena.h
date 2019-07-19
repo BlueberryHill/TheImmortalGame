@@ -8,6 +8,8 @@
 
 #include "Pieces/TIGLogicalPieceManager.h"
 
+#include "General/LogicalTypes.h"
+
 
 /**
  * 
@@ -30,8 +32,8 @@ class THEIMMORTALGAME_API TIGLogicalArena
 {
 	class TilePieceBiMap
 	{
-		using TilePieceMap = TMap<int32, int32>;
-		using PieceTileMap = TMap<int32, int32>;
+		using TilePieceMap = TMap<TIG::TileID, TIG::PieceID>;
+		using PieceTileMap = TMap<TIG::PieceID, TIG::TileID>;
 
 	public:
 		void PieceSpawned(TIG::PieceID PieceID, TIG::TileID TileID);
@@ -45,7 +47,7 @@ public:
 	TIGLogicalArena();
 	~TIGLogicalArena();
 
-	const TIGLogicalPiece& GetPieceForID(int32 PieceID) const;
+	const TIGLogicalPiece& GetPieceForID(TIG::PieceID PieceID) const;
 	void Init(const BoardUtility::BoardDimensions& Dimensions, const UDataTable& StartingPieceLayout);
 
 	FTIGArenaDelegates Delegates;

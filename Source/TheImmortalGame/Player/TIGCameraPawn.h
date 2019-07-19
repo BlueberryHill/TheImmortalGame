@@ -4,12 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+
+#include "General/LogicalTypes.h"
+
 #include "TIGCameraPawn.generated.h"
 
 class USceneComponent;
 class USphereComponent;
 class USpringArmComponent;
 class UCameraComponent;
+
+class ATIGPiece;
 
 UCLASS()
 class THEIMMORTALGAME_API ATIGCameraPawn : public APawn
@@ -25,6 +30,9 @@ public:
 
 	void AddYaw(float Value);
 
+	void Zoom(float Value);
+
+	void OnPieceSelected(ATIGPiece& Piece);
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,4 +61,7 @@ private:
 	void CreateCollisionComponent();
 	void CreateSpringArmComponent();
 	void CreateCameraComponent();
+
+
+	ATIGPiece* CurrentlySelectedPiece = nullptr;
 };

@@ -10,8 +10,9 @@
 #include "TIGPiece.generated.h"
 
 class UStaticMeshComponent;
+class UMaterialInstanceDynamic;
 
-
+struct FVector;
 
 UCLASS()
 class THEIMMORTALGAME_API ATIGPiece : public AActor
@@ -22,6 +23,9 @@ public:
 	// Sets default values for this actor's properties
 	ATIGPiece();
 
+	void SetBaseColour(const FVector& BaseColour);
+	void SetBaseMaterial(UMaterialInstanceDynamic* BaseMat);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,9 +33,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Static Mesh")
 	UStaticMeshComponent* PieceMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Piece Type")
-	EPieceType PieceType = EPieceType::NUM;
-
+	UPROPERTY()
+	UMaterialInstanceDynamic* DynamicBaseMaterial;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

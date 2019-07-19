@@ -7,8 +7,6 @@
 #include "Board/TIGLogicalBoard.h"
 #include "Board/TIGLogicalTile.h"
 
-#include "General/LogicalTypes.h"
-
 #include "Database/TIGStartingPieces.h"
 
 TIGLogicalArena::TIGLogicalArena()
@@ -19,7 +17,7 @@ TIGLogicalArena::~TIGLogicalArena()
 {
 }
 
-const TIGLogicalPiece & TIGLogicalArena::GetPieceForID(int32 PieceID) const
+const TIGLogicalPiece & TIGLogicalArena::GetPieceForID(TIG::PieceID PieceID) const
 {
 	return PieceManager.GetPieceForID(PieceID);
 }
