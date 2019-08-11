@@ -11,15 +11,23 @@
  */
 
 class TIGLogicalArena;
+class TIGMovementBase;
 
 class THEIMMORTALGAME_API TIGMovementManager
 {
+	using MovementPtr = TUniquePtr<TIGMovementBase>;
 public:
 	TIGMovementManager();
 	~TIGMovementManager();
 
-	TArray<TIG::TileID> CalculatePossibleMovesForPiece(TIG::PieceID, const TIGLogicalArena& Arena);
+	TIGMovementManager(const TIGMovementManager&) = delete;
+	TIGMovementManager(TIGMovementManager&&) = delete;
+	TIGMovementManager& operator=(const TIGMovementManager&) = delete;
+	TIGMovementManager& operator=(const TIGMovementManager&&) = delete;
 
+	TArray<TIG::TileID> CalculatePossibleMovesForPiece(TIG::PieceID, const TIGLogicalArena& Arena) const;
+	void				AddPiece(TIG::TileID ID);
 
-
+private:
+	TMap<TIG::PieceID, MovementPtr> PieceMovementMap;
 };

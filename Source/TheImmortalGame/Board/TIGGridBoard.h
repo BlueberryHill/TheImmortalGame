@@ -8,6 +8,9 @@
 #include "BoardUtility.h"
 #include "TileUtility.h"
 
+#include "General/LogicalTypes.h"
+#include "General/EnumUtil.h"
+
 #include "TIGGridBoard.generated.h"
 
 class ATIGTile;
@@ -17,6 +20,22 @@ UCLASS()
 class THEIMMORTALGAME_API ATIGGridBoard : public AActor
 {
 	GENERATED_BODY()
+
+	class TileIDBiMap
+	{
+		using IDTileMap = TMap<TIG::TileID, ATIGTile*>;
+		using TileIDMap = TMap<ATIGTile*, TIG::TileID>;
+
+	public:
+		void AddPair(ATIGTile*, TIG::TileID);
+		ATIGTile*     GetTile(TIG::TileID TileID) const;
+		TIG::TileID	  GetID(const ATIGTile*) const;
+
+
+	private:
+		IDTileMap TileIDToTile;
+		TileIDMap TileToTileID;
+	};
 	
 public:	
 	// Sets default values for this actor's properties
@@ -42,10 +61,10 @@ protected:
 
 	//#TODO: It should be possible to have the enum names show up in the editor. Investigate why this isn't working.
 	UPROPERTY(EditAnywhere, Category = "Materials")
-	UMaterial* LightMaterialsPerState[static_cast<uint8>(TileUtility::ETileState::NUM)];
+	UMaterial* LightMaterialsPerState[TIG::enum_to_value(TileUtility::ETileState::NUM)];
 	
 	UPROPERTY(EditAnywhere, Category = "Materials")
-	UMaterial* DarkMaterialsPerState[static_cast<uint8>(TileUtility::ETileState::NUM)];
+	UMaterial* DarkMaterialsPerState[TIG::enum_to_value(TileUtility::ETileState::NUM)];
 
 public:	
 	// Called every frame
@@ -53,7 +72,11 @@ public:
 
 	virtual void BeginDestroy() override;
 
-	ATIGTile* AddTile(BoardUtility::TileCoordinate Coordinate);
+	ATIGTile* AddTile(BoardUtility::TileCoordinate Coordinate, TIG::TileID TileID);
+
+	TIG::TileID GetTileID(const ATIGTile& Tile) const;
+
+	void SetTileMaterialToState(TIG::TileID TileID, TileUtility::ETileState State);
 private:
 
 	void DestroyAllTiles();
@@ -66,4 +89,5 @@ private:
 	UPROPERTY()
 	TArray<ATIGTile*> Tiles;
 
+	TileIDBiMap TileIDMap;
 };

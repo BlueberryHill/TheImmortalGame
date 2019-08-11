@@ -15,6 +15,7 @@ class USpringArmComponent;
 class UCameraComponent;
 
 class ATIGPiece;
+class ATIGTile;
 
 UCLASS()
 class THEIMMORTALGAME_API ATIGCameraPawn : public APawn
@@ -33,6 +34,7 @@ public:
 	void Zoom(float Value);
 
 	void OnPieceSelected(ATIGPiece& Piece);
+	void OnTileSelected(ATIGTile& Tile);
 
 protected:
 	// Called when the game starts or when spawned

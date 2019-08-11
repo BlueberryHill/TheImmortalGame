@@ -50,14 +50,35 @@ TIG::PieceID UTIGArena::GetPieceID(const ATIGPiece & Piece) const
 	return PieceManager->GetPieceID(Piece);
 }
 
+TIG::TileID UTIGArena::GetTileID(const ATIGTile& Tile) const
+{
+	return GameBoard->GetTileID(Tile);
+}
+
 void UTIGArena::OnPieceSelected(ATIGPiece& Piece)
 {
 	PieceManager->OnPieceSelected(Piece);
+
+	HighlightPotentialMovementTiles(Piece);
+	
+}
+
+void UTIGArena::HighlightPotentialMovementTiles(ATIGPiece& Piece)
+{
+	const TIG::PieceID PieceID = PieceManager->GetPieceID(Piece);
+
+	const TArray<TIG::TileID> TileChoices = LogicalArena->GetFreeTilesToMoveTo(PieceID);
+	for (TIG::TileID ID : TileChoices)
+	{
+		GameBoard->SetTileMaterialToState(ID, TileUtility::ETileState::HIGHLIGHTED);
+		HighlightedTiles.Add(ID);
+	}
 }
 
 void UTIGArena::OnPieceDeselected(ATIGPiece & Piece)
 {
 	PieceManager->OnPieceDeselected(Piece);
+	UnHighlightAllTiles();
 }
 
 void UTIGArena::SetupDelegates(FTIGArenaDelegates& Delegates)
@@ -65,6 +86,17 @@ void UTIGArena::SetupDelegates(FTIGArenaDelegates& Delegates)
 	Delegates.BoardCreated.AddUObject(this, &UTIGArena::BoardCreated);
 	Delegates.PieceSpawned.AddUObject(this, &UTIGArena::PieceCreated);
 	Delegates.TileSpawned.AddUObject(this, &UTIGArena::TileCreated);
+}
+
+void UTIGArena::UnHighlightAllTiles()
+{
+	for (const TIG::TileID& ID : HighlightedTiles)
+	{
+		TileUtility::ETileState ResetState = LogicalArena->GetTileState(ID);
+		GameBoard->SetTileMaterialToState(ID, ResetState);
+	}
+
+	HighlightedTiles.Empty();
 }
 
 
@@ -94,7 +126,7 @@ void UTIGArena::PieceCreated(int32 Row, int32 Col, int32 PieceID)
 
 void UTIGArena::TileCreated(int32 Row, int32 Col, int32 TileID)
 {
-	GameBoard->AddTile({Row, Col});
+	GameBoard->AddTile({Row, Col}, TileID);
 }
 
 void UTIGArena::AddPiece(int32 Row, int32 Col, EPieceType PieceType, TIG::PieceID ID, const ATIGPlayerState& OwningPlayer)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "General/LogicalTypes.h"
 
 #include "TileUtility.h"
 
@@ -23,6 +24,8 @@ public:
 	void SetColour(TileUtility::ETileColour NewColour) { Colour = NewColour; };
 	void SetState(TileUtility::ETileState NewState) { State = NewState; }
 	void SetMaterial(UMaterial* NewMaterial);
+
+	TileUtility::ETileColour GetColour() { return Colour; }
 
 protected:
 	// Called when the game starts or when spawned

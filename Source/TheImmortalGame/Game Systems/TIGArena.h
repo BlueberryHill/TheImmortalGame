@@ -11,6 +11,7 @@ class UTIGPieceManager;
 class ATIGGridBoard;
 class ATIGPlayerState;
 class ATIGPiece;
+class ATIGTile;
 
 class TIGLogicalArena;
 
@@ -33,7 +34,9 @@ public:
 	void InitArena(const TIGLogicalArena& Arena, FTIGArenaDelegates& Delegates);
 
 	TIG::PieceID GetPieceID(const ATIGPiece& Piece) const;
+	TIG::TileID  GetTileID(const ATIGTile& Tile) const;
 	void		 OnPieceSelected(ATIGPiece& Piece);
+	void HighlightPotentialMovementTiles(ATIGPiece & Piece);
 	void		 OnPieceDeselected(ATIGPiece& Piece);
 private:
 	UFUNCTION()
@@ -50,7 +53,11 @@ private:
 
 	const TIGLogicalArena* LogicalArena = nullptr;
 
+	TArray<TIG::TileID> HighlightedTiles;
+
 	void AddPiece(int32 Row, int32 Col, EPieceType PieceType, TIG::PieceID, const ATIGPlayerState& OwningPlayer);
 
 	void SetupDelegates(FTIGArenaDelegates& Delegates);
+
+	void UnHighlightAllTiles();
 };

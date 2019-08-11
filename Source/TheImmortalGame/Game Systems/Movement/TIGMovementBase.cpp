@@ -3,10 +3,17 @@
 
 #include "TIGMovementBase.h"
 
-TIGMovementBase::TIGMovementBase()
+TIGMovementBase::TIGMovementBase(MovementUtility::FMovementRules&& Rules, MovementUtility::EDirection Facing) :
+	MovementRules(MoveTemp(Rules))
 {
+	UpdateMoves(Facing);
 }
 
 TIGMovementBase::~TIGMovementBase()
 {
+}
+
+void TIGMovementBase::UpdateMoves(MovementUtility::EDirection Facing)
+{
+	CurrentAvailableMoves = MovementUtility::GetAvailableMovement(MovementRules, Facing);
 }

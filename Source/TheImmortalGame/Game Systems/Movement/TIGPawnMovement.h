@@ -11,7 +11,6 @@
 class THEIMMORTALGAME_API TIGPawnMovement : public TIGMovementBase
 {
 public:
-	TIGPawnMovement();
+	TIGPawnMovement(MovementUtility::FMovementRules&&, MovementUtility::EDirection Facing);
 	~TIGPawnMovement();
-
 };

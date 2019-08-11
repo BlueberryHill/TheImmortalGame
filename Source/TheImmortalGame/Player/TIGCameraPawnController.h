@@ -54,5 +54,9 @@ private:
 	float CalculateZoomSpeed();
 
 
+	bool  TrySelectPawnUnderCursor();
+	bool  TrySelectTileUnderCursor();
+
+
 
 };

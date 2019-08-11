@@ -4,20 +4,40 @@
 
 #include "CoreMinimal.h"
 
+#include "General/EnumUtil.h"
+
 enum class EPieceType : uint8;
+
+namespace BoardUtility
+{
+	struct TileCoordinate;
+}
 
 namespace MovementUtility
 {
 	enum class EDirection : uint8
 	{
-		 NORTH
-		,SOUTH
-		,EAST
-		,WEST
-		,NORTH_EAST
-		,NORTH_WEST
-		,SOUTH_EAST
-		,SOUTH_WEST
+		  NORTH = 0
+		, SOUTH
+		, EAST
+		, WEST
+		, NORTH_WEST
+		, NORTH_EAST
+		, SOUTH_WEST
+		, SOUTH_EAST
+		, NUM
+	};
+
+	enum class ERelativeDirection : uint8
+	{
+		 FORWARD = 0
+		,BACKWARD
+		,LEFT
+		,RIGHT
+		,DIAGONAL_LEFT
+		,DIAGONAL_RIGHT
+		,REVERSE_DIAGONAL_LEFT
+		,REVERSE_DIAGONAL_RIGHT
 		,NUM
 	};
 
@@ -28,23 +48,44 @@ namespace MovementUtility
 		,NUM
 	};
 
+	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction);
+
 	const int32 UNLIMITED_RANGE = -1;
 	const int32 DEFAULT_PAWN_INITIAL_RANGE = 2;
+	const int32	NO_MOVEMENT = 0;
 
+	template<typename DirectionEnum>
 	struct FLinearMovement
 	{
-		EDirection		Direction = EDirection::NUM;
-		EMovementType   Type	  = EMovementType::NUM;
-		int32			Range	  = UNLIMITED_RANGE;
+		DirectionEnum Direction = DirectionEnum::NUM;
+		EMovementType Type		= EMovementType::NUM;
+		int32		  Range		= NO_MOVEMENT;
 	};
 
-	using LinearMovementArray = MovementUtility::FLinearMovement[static_cast<uint8>(MovementUtility::EDirection::NUM)];
+	using LinearMovementRuleArray	= FLinearMovement<ERelativeDirection>[TIG::enum_to_value(ERelativeDirection::NUM)];
+	using LinearMovementArray		= FLinearMovement<EDirection>[TIG::enum_to_value(EDirection::NUM)];
 
 	struct FLinearMovements
 	{
-		LinearMovementArray LinearMovements;
+		LinearMovementArray MoveArray;
 	};
 
+	struct FLinearMovementRules
+	{
+		LinearMovementRuleArray RuleArray;
+	};
 
-	FLinearMovements DefaultMovementForBaseType(EDirection Facing, EPieceType Type);
+	struct FMovement
+	{
+		FLinearMovements LinearMovements;
+	};
+
+	struct FMovementRules
+	{
+		FLinearMovementRules LinearMovements;
+	};
+
+	FMovementRules GetDefaultMovementRules(EPieceType Type);
+	FMovement	   GetAvailableMovement(const FMovementRules& Rules, EDirection FacingDirection);
+
 }

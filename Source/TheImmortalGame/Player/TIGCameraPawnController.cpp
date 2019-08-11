@@ -8,6 +8,7 @@
 #include "General/Collision.h"
 
 #include "Pieces/TIGPiece.h"
+#include "Board/TIGTile.h"
 
 #include "EngineGlobals.h"
 
@@ -80,13 +81,16 @@ void ATIGCameraPawnController::ZoomIn(float Value)
 
 void ATIGCameraPawnController::SelectAttempt()
 {
-	FHitResult HitResult;
-	GetHitResultUnderCursor(PIECE_TRACE_CHANNEL, false, HitResult);
-	ATIGPiece* SelectedPiece = Cast<ATIGPiece>(HitResult.GetActor());
-	if (SelectedPiece)
+	if (TrySelectPawnUnderCursor() == true)
 	{
-		PossessedPawn->OnPieceSelected(*SelectedPiece);
+		return;
 	}
+	
+	if (TrySelectTileUnderCursor() == true)
+	{
+		return;
+	}
+
 }
 
 float ATIGCameraPawnController::CalculateMovementSpeed()
@@ -105,4 +109,29 @@ float ATIGCameraPawnController::CalculateZoomSpeed()
 {
 	//#TODO: Make tick independent. Implement this after (Make a function of spring arm length?). Clamp between min and max speed
 	return 100.0f;
+}
+
+bool ATIGCameraPawnController::TrySelectPawnUnderCursor()
+{
+	FHitResult HitResult;
+	GetHitResultUnderCursor(PIECE_TRACE_CHANNEL, false, HitResult);
+	ATIGPiece* SelectedPiece = Cast<ATIGPiece>(HitResult.GetActor());
+	if (SelectedPiece)
+	{
+		PossessedPawn->OnPieceSelected(*SelectedPiece);
+	}
+	return SelectedPiece != nullptr;
+}
+
+bool ATIGCameraPawnController::TrySelectTileUnderCursor()
+{
+	FHitResult HitResult;
+	GetHitResultUnderCursor(TILE_TRACE_CHANNEL, false, HitResult);
+	ATIGTile* SelectedTile = Cast<ATIGTile>(HitResult.GetActor());
+	if (SelectedTile)
+	{
+		PossessedPawn->OnTileSelected(*SelectedTile);
+	}
+
+	return SelectedTile != nullptr;
 }

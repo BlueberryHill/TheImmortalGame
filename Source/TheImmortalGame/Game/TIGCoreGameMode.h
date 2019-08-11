@@ -20,7 +20,7 @@ class UTIGGameModeOptions;
 
 
 UCLASS()
-class THEIMMORTALGAME_API ATIGCoreGameMode : public AGameMode
+class THEIMMORTALGAME_API ATIGCoreGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 

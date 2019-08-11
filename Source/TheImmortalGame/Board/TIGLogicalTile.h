@@ -6,6 +6,11 @@
 
 #include "General/LogicalTypes.h"
 
+
+namespace TileUtility
+{
+	enum class ETileState : uint8;
+}
 /**
  * 
  */
@@ -19,6 +24,12 @@ public:
 	static const TIGLogicalTile& GetInvalidTile();
 
 	int32 GetUniqueID() const { return UniqueID; }
+
+	TileUtility::ETileState CurrentState() const							  { return State; }
+	void					SetCurrentState(TileUtility::ETileState NewState) { State = NewState; }
+
 private:
 	TIG::TileID UniqueID = 0;
+
+	TileUtility::ETileState  State;
 };

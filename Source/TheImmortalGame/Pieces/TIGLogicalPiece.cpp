@@ -11,7 +11,8 @@
 
 TIGLogicalPiece::TIGLogicalPiece(EPieceType Type) :
 	UniqueID(EntityUtility::CreateNextUniqueID<TIGLogicalPiece>()),
-	BaseType(Type)
+	BaseType(Type),
+	Facing(MovementUtility::EDirection::NORTH)
 {
 }
 

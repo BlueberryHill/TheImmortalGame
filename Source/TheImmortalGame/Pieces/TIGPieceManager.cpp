@@ -23,36 +23,40 @@ UTIGPieceManager::~UTIGPieceManager()
 
 ATIGPiece* UTIGPieceManager::CreatePiece(const ATIGPlayerState& Player, EPieceType Type, PieceID ID, const FTransform& Transform)
 {
-	TSubclassOf<ATIGPiece> PieceClassToSpawn = PieceClass[static_cast<uint8>(Type)];
+	TSubclassOf<ATIGPiece> PieceClassToSpawn = PieceClass[TIG::enum_to_value(Type)];
 	check(PieceClassToSpawn != nullptr && "TIGPieceManager - Critical Error: Missing Piece Class");
 
 	ATIGPiece* NewPiece = GetWorld()->SpawnActor<ATIGPiece>(*PieceClassToSpawn, Transform);
+	check(NewPiece != nullptr && "TIGPieceManager - Critical Error: Failed to SpawnActor ATIGPiece");
 
-	//#TODO: Refactor
+	CreateBaseMaterialForPiece(NewPiece, Player);
+	
+
+	ActivePieces.Emplace(NewPiece, ID);
+
+	AddPieceToPlayerArmy(Player, NewPiece);
+
+	return NewPiece;
+}
+
+void UTIGPieceManager::CreateBaseMaterialForPiece(ATIGPiece* NewPiece, const ATIGPlayerState&/* Player*/)
+{
 	UMaterialInstanceDynamic* DynamicBaseMaterial = UMaterialInstanceDynamic::Create(BaseMaterial, this);
 	NewPiece->SetBaseMaterial(DynamicBaseMaterial);
-	NewPiece->SetBaseColour({1.0f, 0.0f, 0.0f}); //#TODO Get colour from player
-	
-	if (NewPiece)
+	NewPiece->SetBaseColour({ 1.0f, 0.0f, 0.0f }); //#TODO Get colour from player
+}
+
+void UTIGPieceManager::AddPieceToPlayerArmy(const ATIGPlayerState & Player, ATIGPiece* Piece)
+{
+	Army* PlayerArmy = PlayerPieces.Find(Player.GetUniqueID());
+	if (PlayerArmy)
 	{
-		ActivePieces.Emplace(NewPiece, ID);
-		//#TODO: Refactor
-		Army* PlayerArmy = PlayerPieces.Find(Player.GetUniqueID());
-		if (PlayerArmy)
-		{
-			PlayerArmy->Add(NewPiece);
-		}
-		else
-		{
-			PlayerPieces.Emplace(Player.GetUniqueID(), TArray<ATIGPiece*>{ NewPiece });
-		}
+		PlayerArmy->Add(Piece);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("TIGPieceManager : Tried to spawn a new piece and failed"));
+		PlayerPieces.Emplace(Player.GetUniqueID(), TArray<ATIGPiece*>{ Piece });
 	}
-
-	return NewPiece;
 }
 
 TIG::PieceID UTIGPieceManager::GetPieceID(const ATIGPiece & Piece) const

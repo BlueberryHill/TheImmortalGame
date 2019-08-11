@@ -4,8 +4,11 @@
 #include "TIGLogicalTile.h"
 #include "General/Entity.h"
 
-TIGLogicalTile::TIGLogicalTile(TIG::TileID ID) :
-	UniqueID(ID)
+#include "TileUtility.h"
+
+TIGLogicalTile::TIGLogicalTile(TIG::TileID ID) 
+	: UniqueID(ID)
+	, State(TileUtility::ETileState::NUM)
 {
 }
 

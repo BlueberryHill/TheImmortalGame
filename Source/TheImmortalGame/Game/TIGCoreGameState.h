@@ -28,6 +28,6 @@ public:
 	const TIGLogicalArena& GetLogicalArena() const { return *LogicalArena; }
 
 private:
-	UTIGArena*		 ArenaView	  = nullptr;	//#TODO: This shouldn't live here as different players may have different (or no) view of the world
+	UTIGArena*		 ArenaView	  = nullptr;	//#TODO: This probably shouldn't live here as different players may have different (or no) view of the world
 	TIGLogicalArena* LogicalArena = nullptr;
 };

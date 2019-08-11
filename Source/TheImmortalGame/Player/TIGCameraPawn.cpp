@@ -130,3 +130,21 @@ void ATIGCameraPawn::OnPieceSelected(ATIGPiece& Piece)
 			ArenaView.OnPieceSelected(Piece);
 	}
 }
+
+void ATIGCameraPawn::OnTileSelected(ATIGTile & Tile)
+{
+	if (CurrentlySelectedPiece == nullptr)
+	{
+		return;
+	}
+
+	ATIGCoreGameState* GameState = Cast<ATIGCoreGameState>(GetWorld()->GetGameState());
+	if (GameState)
+	{
+		UTIGArena& ArenaView = GameState->GetArenaView();
+		TIG::TileID TileID = ArenaView.GetTileID(Tile);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Tile: %d"), TileID));
+	}
+
+
+}

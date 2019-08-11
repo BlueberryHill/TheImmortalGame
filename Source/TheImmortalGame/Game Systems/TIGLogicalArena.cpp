@@ -22,10 +22,20 @@ const TIGLogicalPiece & TIGLogicalArena::GetPieceForID(TIG::PieceID PieceID) con
 	return PieceManager.GetPieceForID(PieceID);
 }
 
+const TIGLogicalTile & TIGLogicalArena::GetTileForID(TIG::TileID TileID) const
+{
+	return GameBoard->GetTileForID(TileID);
+}
+
 void TIGLogicalArena::Init(const BoardUtility::BoardDimensions & Dimensions, const UDataTable& StartingPieceLayout)
 {
 	InitGameBoard(Dimensions);
 	InitPieceManager(StartingPieceLayout);
+}
+
+TArray<TIG::TileID> TIGLogicalArena::GetFreeTilesToMoveTo(TIG::PieceID ID) const
+{
+	return MovementManager.CalculatePossibleMovesForPiece(ID, *this);
 }
 
 int32 TIGLogicalArena::GetTileAtCoordinate(BoardUtility::TileCoordinate BoardCoordinate) const
@@ -81,6 +91,8 @@ void TIGLogicalArena::AddPiece(const int32 Row, const int32 Col, const EPieceTyp
 	TIG::PieceID NewPieceID = PieceManager.CreatePiece(OwningPlayerID, PieceType); 
 	TIG::TileID  TileID = GetTileAtCoordinate({ Row, Col });
 	TilePieceAssociation.PieceSpawned(NewPieceID, TileID);
+
+	MovementManager.AddPiece(NewPieceID);
 	
 	Delegates.PieceSpawned.Broadcast(Row, Col, NewPieceID);
 
@@ -100,7 +112,47 @@ TIG::PieceID TIGLogicalArena::TilePieceBiMap::GetPieceOnTile(TIG::TileID TileID)
 	return PieceID ? *PieceID : TIG::INVALID_PIECE_ID;
 }
 
-TIG::TileID TIGLogicalArena::TilePieceBiMap::GeTileForPiece(TIG::TileID PieceID) const
+void TIGLogicalArena::GetNextNFreeTiles(TIG::TileID From, MovementUtility::EDirection Direction, int32 N, TArray<TIG::TileID>& OutTileArray) const
+{
+	GameBoard->GetNextNTiles(From, Direction, N, OutTileArray);
+	RemoveBlockedTiles(OutTileArray);
+	
+}
+
+void  TIGLogicalArena::RemoveBlockedTiles(TArray<TIG::TileID>& OutTileArray) const
+{
+	auto TileIsOccupied = [this](const TIG::TileID ID) -> bool
+	{
+		return GetPieceForTile(ID) != TIG::INVALID_PIECE_ID;
+	};
+
+	TIG::TileID* FirstOccupiedTile = OutTileArray.FindByPredicate(TileIsOccupied);
+	if (FirstOccupiedTile != nullptr)
+	{
+		int32 BlockedIndex = OutTileArray.Find(*FirstOccupiedTile);
+		int32 NumTilesRemaining = BlockedIndex - 1;
+		check(NumTilesRemaining > 0 && "GetNextNFreeTiles - Invalid Blocked Index");
+		OutTileArray.SetNumZeroed(NumTilesRemaining);
+	}
+}
+
+TileUtility::ETileState TIGLogicalArena::GetTileState(TIG::TileID ID) const
+{
+	const TIGLogicalTile& Tile = GameBoard->GetTileForID(ID);
+	return Tile.CurrentState();
+}
+
+TIG::PieceID TIGLogicalArena::GetTileForPiece(TIG::PieceID PieceID) const
+{
+	return TilePieceAssociation.GetTileForPiece(PieceID);
+}
+
+TIG::PieceID TIGLogicalArena::GetPieceForTile(TIG::TileID TileID) const
+{
+	return TilePieceAssociation.GetPieceOnTile(TileID);
+}
+
+TIG::TileID TIGLogicalArena::TilePieceBiMap::GetTileForPiece(TIG::TileID PieceID) const
 {
 	const int32* TileID = PieceToTile.Find(PieceID);
 	return TileID ? *TileID : TIG::INVALID_TILE_ID;

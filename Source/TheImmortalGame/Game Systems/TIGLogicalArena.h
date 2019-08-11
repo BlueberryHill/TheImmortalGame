@@ -10,6 +10,8 @@
 
 #include "General/LogicalTypes.h"
 
+#include "Game Systems/Movement/TIGMovementManager.h"
+
 
 /**
  * 
@@ -23,11 +25,22 @@ namespace BoardUtility
 
 
 class TIGLogicalBoard;
+class TIGLogicalTile;
 class UDataTable;
 
 enum class EPieceType : uint8;
 
+namespace MovementUtility
+{
+	enum class EDirection : uint8;
+}
 
+namespace TileUtility
+{
+	enum class ETileState : uint8;
+}
+
+//TODO: Template this 
 class THEIMMORTALGAME_API TIGLogicalArena
 {
 	class TilePieceBiMap
@@ -37,8 +50,10 @@ class THEIMMORTALGAME_API TIGLogicalArena
 
 	public:
 		void PieceSpawned(TIG::PieceID PieceID, TIG::TileID TileID);
-		TIG::TileID  GetPieceOnTile(TIG::TileID TileID) const;
-		TIG::PieceID GeTileForPiece(TIG::PieceID PieceID) const;
+		TIG::PieceID  GetPieceOnTile(TIG::TileID TileID) const;
+		TIG::TileID	  GetTileForPiece(TIG::PieceID PieceID) const;
+
+
 	private:
 		TilePieceMap TileToPiece;
 		PieceTileMap PieceToTile;
@@ -48,15 +63,24 @@ public:
 	~TIGLogicalArena();
 
 	const TIGLogicalPiece& GetPieceForID(TIG::PieceID PieceID) const;
+	const TIGLogicalTile&  GetTileForID(TIG::TileID TileID) const;
+	TIG::TileID			   GetTileForPiece(TIG::PieceID PieceID) const;
+	TIG::PieceID		   GetPieceForTile(TIG::TileID TileID) const;
 	void Init(const BoardUtility::BoardDimensions& Dimensions, const UDataTable& StartingPieceLayout);
+
+	TArray<TIG::TileID>	   GetFreeTilesToMoveTo(TIG::PieceID) const;
+	void				   GetNextNFreeTiles(TIG::TileID From, MovementUtility::EDirection Direction, int32 N, TArray<TIG::TileID>& OutTileArray) const;
+
+	TileUtility::ETileState GetTileState(TIG::TileID ID) const;
 
 	FTIGArenaDelegates Delegates;
 
 private:
 	TUniquePtr<TIGLogicalBoard> GameBoard;
-	TIGLogicalPieceManager PieceManager;
+	TIGLogicalPieceManager		PieceManager;
+	TIGMovementManager			MovementManager; 
 
-	TilePieceBiMap TilePieceAssociation;
+	TilePieceBiMap				TilePieceAssociation;
 
 	int32 GetTileAtCoordinate(BoardUtility::TileCoordinate BoardCoordinate) const;
 
@@ -65,5 +89,7 @@ private:
 
 	void AddRowOfPieces(const int32 Row, const EPieceType PieceType, TIG::PlayerID OwningPlayerID);
 	void AddPiece(const int32 Row, const int32 Col, const EPieceType PieceType, TIG::PlayerID OwningPlayerID);
+
+	void RemoveBlockedTiles(TArray<TIG::TileID>& OutTileArray) const;
 
 };

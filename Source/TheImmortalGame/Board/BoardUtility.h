@@ -11,8 +11,8 @@ namespace BoardUtility
 {
 	struct TileCoordinate
 	{
-		const int32 Row = 0;
-		const int32 Col = 0;
+		int32 Row = 0;
+		int32 Col = 0;
 	};
 
 	struct TileDimensions

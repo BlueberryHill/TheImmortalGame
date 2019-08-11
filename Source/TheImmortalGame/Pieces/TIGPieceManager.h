@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "General/LogicalTypes.h"
+#include "General/EnumUtil.h"
 
 #include "PieceUtility.h"
 #include "TIGPieceManager.generated.h"
@@ -34,7 +35,8 @@ public:
 	UTIGPieceManager();
 	~UTIGPieceManager();
 
-	ATIGPiece* CreatePiece(const ATIGPlayerState& Player, EPieceType Type, PieceID ID, const FTransform& Transform); 
+	ATIGPiece* CreatePiece(const ATIGPlayerState& Player, EPieceType Type, PieceID ID, const FTransform& Transform);
+
 	PieceID	   GetPieceID(const ATIGPiece& Piece) const;
 
 	void	   OnPieceSelected(ATIGPiece& Piece);
@@ -47,8 +49,11 @@ private:
 	PieceToID	   ActivePieces;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Piece Types")
-	TSubclassOf<ATIGPiece> PieceClass[static_cast<uint8>(EPieceType::NUM)];
+	TSubclassOf<ATIGPiece> PieceClass[TIG::enum_to_value(EPieceType::NUM)];
 
 	UPROPERTY(EditDefaultsOnly, Category = "Material")
 	UMaterial* BaseMaterial;
+
+	void AddPieceToPlayerArmy(const ATIGPlayerState & Player, ATIGPiece* NewPiece);
+	void CreateBaseMaterialForPiece(ATIGPiece * NewPiece, const ATIGPlayerState & Player);
 };

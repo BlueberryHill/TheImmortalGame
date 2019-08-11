@@ -9,6 +9,8 @@
 
 #include "Engine/World.h"
 
+#include "General/EnumUtil.h"
+
 // Sets default values
 ATIGGridBoard::ATIGGridBoard()
 {
@@ -63,7 +65,7 @@ void ATIGGridBoard::BeginDestroy()
 	//DestroyAllTiles();
 }
 
-ATIGTile* ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate)
+ATIGTile* ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate, TIG::TileID TileID)
 {
 	check(GetWorld() != nullptr && "AddTile() - No valid game world");
 	check(TileClass != nullptr && "AddTile() - No Tile Class assigned");
@@ -71,21 +73,34 @@ ATIGTile* ATIGGridBoard::AddTile(BoardUtility::TileCoordinate Coordinate)
 
 	ATIGTile* Tile = SpawnTile(Coordinate, GetTransform());
 	AddTileToBoard(Tile);
-	
+
 	TileUtility::ETileColour Colour = BoardUtility::CoordinateToTileColour(Coordinate);
 	Tile->SetColour(Colour);
 	Tile->SetState(TileUtility::ETileState::IDLE);
-	if (Colour == TileUtility::ETileColour::DARK)
-	{
-		Tile->SetMaterial(DarkMaterialsPerState[static_cast<uint8>(TileUtility::ETileState::IDLE)]);
-	}
-	else
-	{
-		Tile->SetMaterial(LightMaterialsPerState[static_cast<uint8>(TileUtility::ETileState::IDLE)]);
-	}
+	TileIDMap.AddPair(Tile, TileID );
+	SetTileMaterialToState(TileID, TileUtility::ETileState::IDLE);
 
 	return Tile;
 }
+
+TIG::TileID ATIGGridBoard::GetTileID(const ATIGTile& Tile) const
+{
+	return TileIDMap.GetID(&Tile);
+}
+
+void ATIGGridBoard::SetTileMaterialToState(TIG::TileID TileID, TileUtility::ETileState State)
+{
+	ATIGTile* Tile = TileIDMap.GetTile(TileID);
+	if (Tile->GetColour() == TileUtility::ETileColour::DARK) 
+	{
+		Tile->SetMaterial(DarkMaterialsPerState[TIG::enum_to_value(State)]); 
+	}
+	else
+	{
+		Tile->SetMaterial(LightMaterialsPerState[TIG::enum_to_value(State)]);
+	}
+}
+
 
 ATIGTile* ATIGGridBoard::SpawnTile(const BoardUtility::TileCoordinate& Coordinate, const FTransform& Transform)
 {
@@ -122,3 +137,20 @@ void ATIGGridBoard::ValidateCoordinate(BoardUtility::TileCoordinate Coordinate)
 	check(Coordinate.Col < NumColumns && "AddTile: Invalid Column Coordinate");
 }
 
+void ATIGGridBoard::TileIDBiMap::AddPair(ATIGTile* Tile, TIG::TileID ID)
+{
+	TileToTileID.Emplace(Tile, ID);
+	TileIDToTile.Emplace(ID, Tile);
+}
+
+ATIGTile * ATIGGridBoard::TileIDBiMap::GetTile(TIG::TileID TileID) const
+{
+	check(TileIDToTile.Find(TileID) && "Requesting Tile ID which isn't present in BiMap");
+	return *TileIDToTile.Find(TileID);
+}
+
+TIG::TileID ATIGGridBoard::TileIDBiMap::GetID(const ATIGTile* Tile) const
+{
+	check(TileToTileID.Find(Tile) && "Requesting Tile ID which isn't present in BiMap");
+	return *TileToTileID.Find(Tile);
+}

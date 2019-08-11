@@ -6,7 +6,8 @@
 
 
 
-TIGPawnMovement::TIGPawnMovement()
+TIGPawnMovement::TIGPawnMovement(MovementUtility::FMovementRules&& Rules, MovementUtility::EDirection Facing) 
+	: TIGMovementBase(MoveTemp(Rules), Facing)
 {
 }
 

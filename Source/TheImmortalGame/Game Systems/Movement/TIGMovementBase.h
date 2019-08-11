@@ -11,9 +11,14 @@
 class THEIMMORTALGAME_API TIGMovementBase
 {
 public:
-	TIGMovementBase();
+	TIGMovementBase(MovementUtility::FMovementRules&&, MovementUtility::EDirection Facing);
 	~TIGMovementBase();
 
+	const MovementUtility::FMovement& GetAvailableMoves() const { return CurrentAvailableMoves; }
 protected:
-	MovementUtility::LinearMovementArray LinearMovement;
+	void UpdateMoves(MovementUtility::EDirection Facing);
+
+	MovementUtility::FMovement		CurrentAvailableMoves;
+	MovementUtility::FMovementRules MovementRules;
+
 };
