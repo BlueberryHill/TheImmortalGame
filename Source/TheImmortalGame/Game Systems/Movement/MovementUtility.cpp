@@ -75,6 +75,20 @@ namespace MovementUtility
 		return DefaultQueenRules;
 	}
 
+	FLinearMovementRules DefaultKingRules()
+	{
+		FLinearMovementRules DefaultKingRules;
+		SetMovement(ERelativeDirection::DIAGONAL_RIGHT, { ERelativeDirection::DIAGONAL_RIGHT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_RIGHT, { ERelativeDirection::REVERSE_DIAGONAL_RIGHT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::DIAGONAL_LEFT, { ERelativeDirection::DIAGONAL_LEFT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_LEFT, { ERelativeDirection::REVERSE_DIAGONAL_LEFT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::FORWARD, { ERelativeDirection::FORWARD, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::BACKWARD, { ERelativeDirection::BACKWARD, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::LEFT, { ERelativeDirection::LEFT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+		SetMovement(ERelativeDirection::RIGHT, { ERelativeDirection::RIGHT, EMovementType::SLIDE, DEFAULT_KING_INITIAL_RANGE }, DefaultKingRules.RuleArray);
+
+		return DefaultKingRules;
+	}
 
 
 	FLinearMovementRules GetDefaultLinearRules(EPieceType Type)
@@ -92,7 +106,7 @@ namespace MovementUtility
 		case EPieceType::QUEEN:
 			return DefaultQueenRules();
 		case EPieceType::KING:
-			return DefaultRookRules();
+			return DefaultKingRules();
 		default:
 			checkNoEntry();
 			return DefaultPawnRules();

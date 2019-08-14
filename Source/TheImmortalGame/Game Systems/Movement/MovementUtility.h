@@ -54,6 +54,7 @@ namespace MovementUtility
 
 	const int32 UNLIMITED_RANGE = std::numeric_limits<int32>::max();
 	const int32 DEFAULT_PAWN_INITIAL_RANGE = 2;
+	const int32 DEFAULT_KING_INITIAL_RANGE = 1;
 	const int32	NO_MOVEMENT = 0;
 
 	template<typename DirectionEnum>
