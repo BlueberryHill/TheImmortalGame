@@ -60,6 +60,21 @@ namespace MovementUtility
 		return DefaultBishopMovement;
 	}
 
+	FLinearMovementRules DefaultQueenRules()
+	{
+		FLinearMovementRules DefaultQueenRules;
+		SetMovement(ERelativeDirection::DIAGONAL_RIGHT, { ERelativeDirection::DIAGONAL_RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_RIGHT, { ERelativeDirection::REVERSE_DIAGONAL_RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::DIAGONAL_LEFT, { ERelativeDirection::DIAGONAL_LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_LEFT, { ERelativeDirection::REVERSE_DIAGONAL_LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::FORWARD, { ERelativeDirection::FORWARD, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::BACKWARD, { ERelativeDirection::BACKWARD, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::LEFT, { ERelativeDirection::LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+		SetMovement(ERelativeDirection::RIGHT, { ERelativeDirection::RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultQueenRules.RuleArray);
+
+		return DefaultQueenRules;
+	}
+
 
 
 	FLinearMovementRules GetDefaultLinearRules(EPieceType Type)
@@ -75,7 +90,7 @@ namespace MovementUtility
 		case EPieceType::BISHOP:
 			return DefaultBishopRules();
 		case EPieceType::QUEEN:
-			return DefaultRookRules();
+			return DefaultQueenRules();
 		case EPieceType::KING:
 			return DefaultRookRules();
 		default:
