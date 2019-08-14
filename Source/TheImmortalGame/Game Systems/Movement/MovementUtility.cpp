@@ -27,6 +27,9 @@ namespace MovementUtility
 		Movements[TIG::enum_to_value(Direction)] = std::move(Movement);
 	}
 
+
+	// TODO: Break rules into separate file
+
 	FLinearMovementRules DefaultPawnRules() //#TODO: Could make this data driven
 	{
 		FLinearMovementRules DefaultPawnMovement;
@@ -46,6 +49,17 @@ namespace MovementUtility
 		return DefaultRookMovement;
 	}
 
+	FLinearMovementRules DefaultBishopRules()
+	{
+		FLinearMovementRules DefaultBishopMovement;
+		SetMovement(ERelativeDirection::DIAGONAL_RIGHT, { ERelativeDirection::DIAGONAL_RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultBishopMovement.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_RIGHT, { ERelativeDirection::REVERSE_DIAGONAL_RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultBishopMovement.RuleArray);
+		SetMovement(ERelativeDirection::DIAGONAL_LEFT, { ERelativeDirection::DIAGONAL_LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultBishopMovement.RuleArray);
+		SetMovement(ERelativeDirection::REVERSE_DIAGONAL_LEFT, { ERelativeDirection::REVERSE_DIAGONAL_LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultBishopMovement.RuleArray);
+
+		return DefaultBishopMovement;
+	}
+
 
 
 	FLinearMovementRules GetDefaultLinearRules(EPieceType Type)
@@ -59,7 +73,7 @@ namespace MovementUtility
 		case EPieceType::KNIGHT:
 			return DefaultRookRules();
 		case EPieceType::BISHOP:
-			return DefaultRookRules();
+			return DefaultBishopRules();
 		case EPieceType::QUEEN:
 			return DefaultRookRules();
 		case EPieceType::KING:
@@ -163,7 +177,7 @@ namespace MovementUtility
 			case EDirection::NORTH_WEST:
 			{
 				++Coordinate.Row;
-				++Coordinate.Col;
+				--Coordinate.Col;
 				break;
 			}
 			case EDirection::SOUTH_EAST:
