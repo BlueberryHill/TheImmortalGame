@@ -13,6 +13,8 @@
 class TIGLogicalArena;
 class TIGMovementBase;
 
+enum class EPieceType : uint8;
+
 class THEIMMORTALGAME_API TIGMovementManager
 {
 	using MovementPtr = TUniquePtr<TIGMovementBase>;
@@ -26,7 +28,7 @@ public:
 	TIGMovementManager& operator=(const TIGMovementManager&&) = delete;
 
 	TArray<TIG::TileID> CalculatePossibleMovesForPiece(TIG::PieceID, const TIGLogicalArena& Arena) const;
-	void				AddPiece(TIG::TileID ID);
+	void				AddPiece(TIG::TileID ID, EPieceType PieceType);
 
 private:
 	TMap<TIG::PieceID, MovementPtr> PieceMovementMap;

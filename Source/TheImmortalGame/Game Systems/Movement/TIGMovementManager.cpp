@@ -63,7 +63,7 @@ TArray<TIG::TileID> TIGMovementManager::CalculatePossibleMovesForPiece(TIG::Piec
 	return ReachableTiles;
 }
 
-void TIGMovementManager::AddPiece(TIG::TileID ID)
+void TIGMovementManager::AddPiece(TIG::TileID ID, EPieceType PieceType)
 {
-	PieceMovementMap.Emplace(ID, MakeUnique<TIGMovementBase>(MovementUtility::GetDefaultMovementRules(EPieceType::PAWN), MovementUtility::EDirection::NORTH));
+	PieceMovementMap.Emplace(ID, MakeUnique<TIGMovementBase>(MovementUtility::GetDefaultMovementRules(PieceType), MovementUtility::EDirection::NORTH));
 }

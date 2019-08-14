@@ -35,11 +35,40 @@ namespace MovementUtility
 		return DefaultPawnMovement;
 	}
 
+	FLinearMovementRules DefaultRookRules() 
+	{
+		FLinearMovementRules DefaultRookMovement;
+		SetMovement(ERelativeDirection::FORWARD, { ERelativeDirection::FORWARD, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultRookMovement.RuleArray);
+		SetMovement(ERelativeDirection::BACKWARD, { ERelativeDirection::BACKWARD, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultRookMovement.RuleArray);
+		SetMovement(ERelativeDirection::LEFT, { ERelativeDirection::LEFT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultRookMovement.RuleArray);
+		SetMovement(ERelativeDirection::RIGHT, { ERelativeDirection::RIGHT, EMovementType::SLIDE, UNLIMITED_RANGE }, DefaultRookMovement.RuleArray);
+
+		return DefaultRookMovement;
+	}
+
+
 
 	FLinearMovementRules GetDefaultLinearRules(EPieceType Type)
 	{
-		Type;
-		return DefaultPawnRules();
+		switch (Type)
+		{
+		case EPieceType::PAWN:
+			return DefaultPawnRules();
+		case EPieceType::ROOK:
+			return DefaultRookRules();
+		case EPieceType::KNIGHT:
+			return DefaultRookRules();
+		case EPieceType::BISHOP:
+			return DefaultRookRules();
+		case EPieceType::QUEEN:
+			return DefaultRookRules();
+		case EPieceType::KING:
+			return DefaultRookRules();
+		default:
+			checkNoEntry();
+			return DefaultPawnRules();
+		}
+
 	}
 
 	const FRelativeToAbsoluteDirection& RelativeToAbsoluteDirections()

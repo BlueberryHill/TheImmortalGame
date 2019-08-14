@@ -6,6 +6,8 @@
 
 #include "General/EnumUtil.h"
 
+#include <limits>
+
 enum class EPieceType : uint8;
 
 namespace BoardUtility
@@ -50,7 +52,7 @@ namespace MovementUtility
 
 	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction);
 
-	const int32 UNLIMITED_RANGE = -1;
+	const int32 UNLIMITED_RANGE = std::numeric_limits<int32>::max();
 	const int32 DEFAULT_PAWN_INITIAL_RANGE = 2;
 	const int32	NO_MOVEMENT = 0;
 

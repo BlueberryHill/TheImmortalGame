@@ -92,7 +92,7 @@ void TIGLogicalArena::AddPiece(const int32 Row, const int32 Col, const EPieceTyp
 	TIG::TileID  TileID = GetTileAtCoordinate({ Row, Col });
 	TilePieceAssociation.PieceSpawned(NewPieceID, TileID);
 
-	MovementManager.AddPiece(NewPieceID);
+	MovementManager.AddPiece(NewPieceID, PieceType);
 	
 	Delegates.PieceSpawned.Broadcast(Row, Col, NewPieceID);
 
@@ -123,16 +123,15 @@ void  TIGLogicalArena::RemoveBlockedTiles(TArray<TIG::TileID>& OutTileArray) con
 {
 	auto TileIsOccupied = [this](const TIG::TileID ID) -> bool
 	{
-		return GetPieceForTile(ID) != TIG::INVALID_PIECE_ID;
+		return GetPieceForTile(ID) != TIG::INVALID_PIECE_ID; //#TODO: Tile occupied state
 	};
 
 	TIG::TileID* FirstOccupiedTile = OutTileArray.FindByPredicate(TileIsOccupied);
 	if (FirstOccupiedTile != nullptr)
 	{
 		int32 BlockedIndex = OutTileArray.Find(*FirstOccupiedTile);
-		int32 NumTilesRemaining = BlockedIndex - 1;
-		check(NumTilesRemaining > 0 && "GetNextNFreeTiles - Invalid Blocked Index");
-		OutTileArray.SetNumZeroed(NumTilesRemaining);
+		check(BlockedIndex >= 0 && "GetNextNFreeTiles - Invalid Blocked Index");
+		OutTileArray.SetNumZeroed(BlockedIndex);
 	}
 }
 
