@@ -76,6 +76,26 @@ void TIGLogicalBoard::GetNextNTiles(TIG::TileID From, MovementUtility::EDirectio
 	GetNextNTiles(FromTile, Direction, N, OutTileArray);
 }
 
+TIG::TileID TIGLogicalBoard::GetTileInDirection(TIG::TileID From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway)
+{
+	const TIGLogicalTile& FromTile = GetTileForID(From);
+	return GetTileInDirection(FromTile, Direction, NumberOfTilesAway);
+}
+
+TIG::TileID TIGLogicalBoard::GetTileInDirection(const TIGLogicalTile & From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway)
+{
+	BoardUtility::TileCoordinate Coordinate = TileToCoordinate(From);
+	IncrementCoordinate(Coordinate, Direction, NumberOfTilesAway);
+	if (IsValidCoordinate(Coordinate))
+	{
+		return GetTileAtCoordinate(Coordinate);
+	}
+	else
+	{
+		return TIG::INVALID_TILE_ID;
+	}
+}
+
 const TIGLogicalTile& TIGLogicalBoard::AddTile(int32 Row, int32 Col)
 {
 	check(GameBoard[Row][Col] && GameBoard[Row][Col]->GetUniqueID() == -1 && "AddTile() - Board has not been initialised correctly");

@@ -50,11 +50,13 @@ namespace MovementUtility
 		,NUM
 	};
 
-	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction);
+	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction, int32 Delta = 1);
 
 	const int32 UNLIMITED_RANGE = std::numeric_limits<int32>::max();
 	const int32 DEFAULT_PAWN_INITIAL_RANGE = 2;
 	const int32 DEFAULT_KING_INITIAL_RANGE = 1;
+	const int32 DEFAULT_KNIGHT_LONG_RANGE = 2;
+	const int32 DEFAULT_KNIGHT_SHORT_RANGE = 1;
 	const int32	NO_MOVEMENT = 0;
 
 	template<typename DirectionEnum>
@@ -65,8 +67,18 @@ namespace MovementUtility
 		int32		  Range		= NO_MOVEMENT;
 	};
 
+	template<typename DirectionEnum>
+	struct FSequenceMovement //TODO: Linear is superfluos
+	{
+		TArray<FLinearMovement<DirectionEnum>> Movements;
+	};
+
+
 	using LinearMovementRuleArray	= FLinearMovement<ERelativeDirection>[TIG::enum_to_value(ERelativeDirection::NUM)];
 	using LinearMovementArray		= FLinearMovement<EDirection>[TIG::enum_to_value(EDirection::NUM)];
+
+	using SequenceMovementRuleArray = TArray<FSequenceMovement<ERelativeDirection>>;
+	using SequenceMovementArray		= TArray<FSequenceMovement<EDirection>>;
 
 	struct FLinearMovements
 	{
@@ -80,12 +92,14 @@ namespace MovementUtility
 
 	struct FMovement
 	{
-		FLinearMovements LinearMovements;
+		FLinearMovements	  LinearMovements;
+		SequenceMovementArray SequenceMovements;
 	};
 
 	struct FMovementRules
 	{
-		FLinearMovementRules LinearMovements;
+		FLinearMovementRules	   LinearMovements;
+		SequenceMovementRuleArray  SequenceMovements;
 	};
 
 	FMovementRules GetDefaultMovementRules(EPieceType Type);

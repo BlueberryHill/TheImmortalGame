@@ -41,6 +41,9 @@ public:
 
 	void GetNextNTiles(const TIGLogicalTile& From, MovementUtility::EDirection Direction, int32 N, TArray<TIG::TileID>& OutTileArray) const;
 	void GetNextNTiles(TIG::TileID From, MovementUtility::EDirection Direction, int32 N, TArray<TIG::TileID>& OutTileArray) const;
+	
+	TIG::TileID GetTileInDirection(TIG::TileID From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway);
+	TIG::TileID GetTileInDirection(const TIGLogicalTile& From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway);
 private:
 	Board						  GameBoard;
 	BoardUtility::BoardDimensions Dimensions;

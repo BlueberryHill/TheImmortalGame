@@ -70,6 +70,10 @@ public:
 
 	TArray<TIG::TileID>	   GetFreeTilesToMoveTo(TIG::PieceID) const;
 	void				   GetNextNFreeTiles(TIG::TileID From, MovementUtility::EDirection Direction, int32 N, TArray<TIG::TileID>& OutTileArray) const;
+	TIG::TileID			   GetTileInDirection(TIG::TileID From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway) const;
+
+
+	bool				   TileIsOccupied(const TIG::TileID ID) const;
 
 	TileUtility::ETileState GetTileState(TIG::TileID ID) const;
 

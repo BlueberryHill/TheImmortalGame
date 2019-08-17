@@ -27,7 +27,6 @@ namespace MovementUtility
 		Movements[TIG::enum_to_value(Direction)] = std::move(Movement);
 	}
 
-
 	// TODO: Break rules into separate file
 
 	FLinearMovementRules DefaultPawnRules() //#TODO: Could make this data driven
@@ -90,6 +89,58 @@ namespace MovementUtility
 		return DefaultKingRules;
 	}
 
+	FLinearMovementRules DefaultKnightRules()
+	{
+		return FLinearMovementRules();
+	}
+
+	SequenceMovementRuleArray DefaultKnightSequenceRules()
+	{
+		FSequenceMovement<ERelativeDirection> ForwardRight;
+		ForwardRight.Movements.Add({ ERelativeDirection::FORWARD, EMovementType::JUMP, DEFAULT_KNIGHT_LONG_RANGE });
+		ForwardRight.Movements.Add({ ERelativeDirection::RIGHT, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> RightForward;
+		RightForward.Movements.Add({ ERelativeDirection::RIGHT, EMovementType::JUMP,  DEFAULT_KNIGHT_LONG_RANGE });
+		RightForward.Movements.Add({ ERelativeDirection::FORWARD, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> ForwardLeft;
+		ForwardLeft.Movements.Add({ ERelativeDirection::FORWARD, EMovementType::JUMP, DEFAULT_KNIGHT_LONG_RANGE });
+		ForwardLeft.Movements.Add({ ERelativeDirection::LEFT, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> LeftForward;
+		LeftForward.Movements.Add({ ERelativeDirection::LEFT, EMovementType::JUMP,  DEFAULT_KNIGHT_LONG_RANGE });
+		LeftForward.Movements.Add({ ERelativeDirection::FORWARD, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> BackwardRight;
+		BackwardRight.Movements.Add({ ERelativeDirection::BACKWARD, EMovementType::JUMP, DEFAULT_KNIGHT_LONG_RANGE });
+		BackwardRight.Movements.Add({ ERelativeDirection::RIGHT, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> RightBackward;
+		RightBackward.Movements.Add({ ERelativeDirection::RIGHT, EMovementType::JUMP,  DEFAULT_KNIGHT_LONG_RANGE });
+		RightBackward.Movements.Add({ ERelativeDirection::BACKWARD, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> BackwardLeft;
+		BackwardLeft.Movements.Add({ ERelativeDirection::BACKWARD, EMovementType::JUMP, DEFAULT_KNIGHT_LONG_RANGE });
+		BackwardLeft.Movements.Add({ ERelativeDirection::LEFT, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		FSequenceMovement<ERelativeDirection> LeftBackward;
+		LeftBackward.Movements.Add({ ERelativeDirection::LEFT, EMovementType::JUMP,  DEFAULT_KNIGHT_LONG_RANGE });
+		LeftBackward.Movements.Add({ ERelativeDirection::BACKWARD, EMovementType::JUMP, DEFAULT_KNIGHT_SHORT_RANGE });
+
+		SequenceMovementRuleArray DefaultKnightRules;
+		DefaultKnightRules.Add(ForwardRight);
+		DefaultKnightRules.Add(RightForward);
+		DefaultKnightRules.Add(ForwardLeft);
+		DefaultKnightRules.Add(LeftForward);
+		DefaultKnightRules.Add(BackwardRight);
+		DefaultKnightRules.Add(RightBackward);
+		DefaultKnightRules.Add(BackwardLeft);
+		DefaultKnightRules.Add(LeftBackward);
+
+		return DefaultKnightRules;
+
+	}
 
 	FLinearMovementRules GetDefaultLinearRules(EPieceType Type)
 	{
@@ -100,7 +151,7 @@ namespace MovementUtility
 		case EPieceType::ROOK:
 			return DefaultRookRules();
 		case EPieceType::KNIGHT:
-			return DefaultRookRules();
+			return FLinearMovementRules();
 		case EPieceType::BISHOP:
 			return DefaultBishopRules();
 		case EPieceType::QUEEN:
@@ -109,10 +160,34 @@ namespace MovementUtility
 			return DefaultKingRules();
 		default:
 			checkNoEntry();
-			return DefaultPawnRules();
+			return FLinearMovementRules();
 		}
 
 	}
+
+	SequenceMovementRuleArray GetDefaultSequentialRules(EPieceType Type)
+	{
+		switch (Type)
+		{
+		case EPieceType::PAWN:
+			return SequenceMovementRuleArray();
+		case EPieceType::ROOK:
+			return SequenceMovementRuleArray();
+		case EPieceType::KNIGHT:
+			return DefaultKnightSequenceRules();
+		case EPieceType::BISHOP:
+			return SequenceMovementRuleArray();
+		case EPieceType::QUEEN:
+			return SequenceMovementRuleArray();
+		case EPieceType::KING:
+			return SequenceMovementRuleArray();
+		default:
+			checkNoEntry();
+			return SequenceMovementRuleArray();
+		}
+	}
+
+
 
 	const FRelativeToAbsoluteDirection& RelativeToAbsoluteDirections()
 	{
@@ -173,52 +248,52 @@ namespace MovementUtility
 		return DirectionMapping;
 	}
 
-	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction)
+	void IncrementCoordinate(BoardUtility::TileCoordinate& Coordinate, EDirection Direction, int32 Delta)
 	{
 		switch (Direction)
 		{
 			case EDirection::NORTH:
 			{
-				++Coordinate.Row;
+				Coordinate.Row += Delta;
 				break;
 			}
 			case EDirection::SOUTH:
 			{
-				--Coordinate.Row;
+				Coordinate.Row -= Delta;
 				break;
 			}
 			case EDirection::EAST:
 			{
-				++Coordinate.Col;
+				Coordinate.Col += Delta;
 				break;
 			}
 			case EDirection::WEST:
 			{
-				--Coordinate.Col;
+				Coordinate.Col -= Delta;
 				break;
 			}
 			case EDirection::NORTH_EAST:
 			{
-				++Coordinate.Col;
-				++Coordinate.Row;
+				Coordinate.Col += Delta;
+				Coordinate.Row += Delta;
 				break;
 			}
 			case EDirection::NORTH_WEST:
 			{
-				++Coordinate.Row;
-				--Coordinate.Col;
+				Coordinate.Row += Delta;
+				Coordinate.Col -= Delta;
 				break;
 			}
 			case EDirection::SOUTH_EAST:
 			{
-				--Coordinate.Row;
-				++Coordinate.Col;
+				Coordinate.Row -= Delta;
+				Coordinate.Col += Delta;
 				break;
 			}
 			case EDirection::SOUTH_WEST:
 			{
-				--Coordinate.Row;
-				--Coordinate.Col;
+				Coordinate.Row -= Delta;
+				Coordinate.Col -= Delta;
 				break;
 			}
 			default:
@@ -230,6 +305,7 @@ namespace MovementUtility
 	{
 		FMovementRules Movement; 
 		Movement.LinearMovements = GetDefaultLinearRules(Type);
+		Movement.SequenceMovements = GetDefaultSequentialRules(Type);
 		return Movement;
 	}
 	FMovement GetAvailableMovement(const FMovementRules& Rules, EDirection FacingDirection)
@@ -246,9 +322,22 @@ namespace MovementUtility
 		for (uint8 DirectionIdx = 0; DirectionIdx < TIG::enum_to_value(ERelativeDirection::NUM); ++DirectionIdx) 
 		{
 			FLinearMovement<ERelativeDirection> Rule = Rules.LinearMovements.RuleArray[DirectionIdx];
-			EDirection AbsoluteDirection = AbsoluteDirections.AbsoluteDirections[TIG::enum_to_value(Rule.Direction)];
+			EDirection AbsoluteDirection = AbsoluteDirections.AbsoluteDirections[TIG::enum_to_value(Rule.Direction)]; //TODO: Refactor Double Name
 			AvailableMovement.LinearMovements.MoveArray[DirectionIdx] = { AbsoluteDirection, Rule.Type, Rule.Range };
 		}
+
+		//TODO: refactor
+		for (const FSequenceMovement<ERelativeDirection>& MovementRule : Rules.SequenceMovements)
+		{
+			FSequenceMovement<EDirection> SequenceMovement;
+			for (FLinearMovement<ERelativeDirection> Movement : MovementRule.Movements)
+			{
+				EDirection AbsoluteDirection = AbsoluteDirections.AbsoluteDirections[TIG::enum_to_value(Movement.Direction)];
+				SequenceMovement.Movements.Add({ AbsoluteDirection, Movement.Type, Movement.Range });
+			}
+			AvailableMovement.SequenceMovements.Add(SequenceMovement);
+		}
+
 
 		return AvailableMovement;
 

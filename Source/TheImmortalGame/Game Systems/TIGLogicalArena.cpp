@@ -9,6 +9,7 @@
 
 #include "Database/TIGStartingPieces.h"
 
+
 TIGLogicalArena::TIGLogicalArena()
 {
 }
@@ -116,17 +117,19 @@ void TIGLogicalArena::GetNextNFreeTiles(TIG::TileID From, MovementUtility::EDire
 {
 	GameBoard->GetNextNTiles(From, Direction, N, OutTileArray);
 	RemoveBlockedTiles(OutTileArray);
-	
 }
+
+TIG::TileID TIGLogicalArena::GetTileInDirection(TIG::TileID From, MovementUtility::EDirection Direction, int32 NumberOfTilesAway) const
+{
+	 return GameBoard->GetTileInDirection(From, Direction, NumberOfTilesAway);
+}
+
+
 
 void  TIGLogicalArena::RemoveBlockedTiles(TArray<TIG::TileID>& OutTileArray) const
 {
-	auto TileIsOccupied = [this](const TIG::TileID ID) -> bool
-	{
-		return GetPieceForTile(ID) != TIG::INVALID_PIECE_ID; //#TODO: Tile occupied state
-	};
-
-	TIG::TileID* FirstOccupiedTile = OutTileArray.FindByPredicate(TileIsOccupied);
+	auto IsTileOccupied = [this](TIG::TileID ID) { return TileIsOccupied(ID); };
+	TIG::TileID* FirstOccupiedTile = OutTileArray.FindByPredicate(IsTileOccupied);
 	if (FirstOccupiedTile != nullptr)
 	{
 		int32 BlockedIndex = OutTileArray.Find(*FirstOccupiedTile);
@@ -156,3 +159,9 @@ TIG::TileID TIGLogicalArena::TilePieceBiMap::GetTileForPiece(TIG::TileID PieceID
 	const int32* TileID = PieceToTile.Find(PieceID);
 	return TileID ? *TileID : TIG::INVALID_TILE_ID;
 }
+
+
+bool TIGLogicalArena::TileIsOccupied(const TIG::TileID ID) const
+{
+	return GetPieceForTile(ID) != TIG::INVALID_PIECE_ID; //#TODO: Tile occupied state
+};
